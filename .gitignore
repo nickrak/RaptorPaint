@@ -3,3 +3,4 @@
 *.o
 moc_*
 Makefile*
+ui_*.h
