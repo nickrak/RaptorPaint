@@ -10,9 +10,12 @@ TARGET = RaptorPaint
 TEMPLATE = app
 
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    mainwindow.cpp
 
 HEADERS  += \
-    netpaintinterface.h
+    netpaintinterface.h \
+    mainwindow.h
 
-FORMS    +=
+FORMS    += \
+    mainwindow.ui
