@@ -7,13 +7,15 @@
 class NetPaintInterface
 {
 public:
-    virtual bool setUsername(QString name) = 0;
-    virtual bool isParticipant(QString name) = 0;
-    virtual QList<QString> getParticipantList() = 0;
+    NetPaintInterface();
+    ~NetPaintInterface();
+    bool setUsername(QString name);
+    bool isParticipant(QString name);
+    QList<QString> getParticipantList();
 
 public slots:
-    virtual void updateImage(QImage image) = 0;
-    virtual void sendTextMessage(QString message) = 0;
+    void updateImage(QImage image);
+    void sendTextMessage(QString message);
 
 signals:
     void updatedParticipantList(QList<QString> participants);
