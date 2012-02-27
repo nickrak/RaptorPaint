@@ -10,8 +10,10 @@ TARGET = RaptorPaintServer
 TEMPLATE = app
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    sockethandler.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    sockethandler.h
 
 FORMS    += mainwindow.ui
