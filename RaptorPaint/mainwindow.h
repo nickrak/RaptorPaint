@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "connectionmanager.h"
 
 namespace Ui {
 class MainWindow;
@@ -14,9 +15,12 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+private slots:
+    void gotTextMessage(QString msg);
     
 private:
     Ui::MainWindow *ui;
+    ConnectionManager *cm;
 };
 
 #endif // MAINWINDOW_H

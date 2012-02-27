@@ -11,11 +11,19 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    connectionmanager.cpp \
+    connectionwindow.cpp
 
 HEADERS  += \
     netpaintinterface.h \
-    mainwindow.h
+    mainwindow.h \
+    connectionmanager.h \
+    connectionwindow.h
 
 FORMS    += \
-    mainwindow.ui
+    mainwindow.ui \
+    connectionwindow.ui
+
+RESOURCES += \
+    Resources.qrc

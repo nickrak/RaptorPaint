@@ -3,12 +3,23 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    cm(new ConnectionManager)
 {
     ui->setupUi(this);
+    this->connect(this->cm,SIGNAL(gotTextMessage(QString)),this,SLOT(gotTextMessage(QString)));
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::gotTextMessage(QString msg)
+{
+    if(msg.startsWith(QString("[%1]").arg(this->cm->getName())))
+    {
+        msg = msg.prepend("<p class=\"me\">").append("</p>");
+    }
+    ui->chatLog->append(msg);
 }

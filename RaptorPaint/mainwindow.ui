@@ -82,8 +82,8 @@
   <widget class="QDockWidget" name="textChatBox">
    <property name="minimumSize">
     <size>
-     <width>30</width>
-     <height>150</height>
+     <width>102</width>
+     <height>160</height>
     </size>
    </property>
    <property name="features">
@@ -95,11 +95,26 @@
    <attribute name="dockWidgetArea">
     <number>8</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents"/>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <property name="margin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QTextEdit" name="chatLog"/>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="input"/>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <action name="actionConnect_Host">
    <property name="text">
-    <string>Connect/Host</string>
+    <string>Connect</string>
    </property>
   </action>
   <action name="actionSave">
