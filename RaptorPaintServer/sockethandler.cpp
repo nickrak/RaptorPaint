@@ -20,13 +20,16 @@ SocketHandler::SocketHandler(QTcpSocket* sock) :
     }
 
     this->connect(this->socket, SIGNAL(readyRead()), this, SLOT(gotDataFromSocket()));
-
-
+    this->connect(this->socket, SIGNAL(disconnected()), this, SLOT(deleteLater()));
 }
 
 // Connection Lost
 SocketHandler::~SocketHandler()
 {
+    this->gotTextMessage(QString("[**SERVER**] %1 left.").arg(this->name));
+
+    qDebug("SocketHandler erase");
+
     socketHandlers.removeAll(this);
 
     if (this->socket->isOpen())
