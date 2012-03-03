@@ -13,6 +13,9 @@ class ConnectionWindow : public QMainWindow
 public:
     explicit ConnectionWindow(QWidget *parent = 0);
     ~ConnectionWindow();
+
+signals:
+    void connectionReady(QString username, QString hostname);
     
 private slots:
     void cancelClicked();

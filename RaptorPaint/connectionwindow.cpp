@@ -22,13 +22,16 @@ void ConnectionWindow::cancelClicked()
     ui->ipAddress->setText("");
     ui->userName->setText("");
     this->close();
+    this->deleteLater();
 }
 
 void ConnectionWindow::connectClicked()
 {
     if (!ui->ipAddress->text().length() == 0 && !ui->userName->text().length() == 0)
     {
-
+        this->connectionReady(ui->userName->text(), ui->ipAddress->text());
+        this->close();
+        this->deleteLater();
     }
     else
     {

@@ -1,4 +1,5 @@
 #include "connectionmanager.h"
+#include "connectionwindow.h"
 
 ConnectionManager::ConnectionManager() :
     QThread()
@@ -26,7 +27,14 @@ void ConnectionManager::disconnect()
 
 void ConnectionManager::openConnectionWindow()
 {
+    ConnectionWindow* cw = new ConnectionWindow();
+    this->connect(cw, SIGNAL(connectionReady(QString,QString)), this, SLOT(connectionWindowResponce(QString,QString)));
+    cw->show();
+}
 
+void ConnectionManager::connectionWindowResponce(QString username, QString hostname)
+{
+    this->socket.connectToHost(hostname, 24554);
 }
 
 void ConnectionManager::setMute(QString name, bool mute = true)

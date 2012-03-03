@@ -22,6 +22,9 @@ public:
   void setMute(QString name, bool mute);
   QString getName();
 
+private slots:
+  void connectionWindowResponce(QString username, QString hostname);
+
 private:
   void run();
   QMap<QString, QImage> layers;
