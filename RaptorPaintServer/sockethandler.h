@@ -36,6 +36,7 @@ private:
     QDataStream ds;
     bool keepAlive;
     QString name;
+    bool reading;
 
     QQueue<QString> pendingMessages;
     QMap<QString, QByteArrayQueue> pendingUpdates;

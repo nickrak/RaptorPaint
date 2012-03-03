@@ -23,6 +23,7 @@ public:
 
 private slots:
     void newConnection();
+    void textMessage(QString message);
     
 private:
     Ui::MainWindow *ui;

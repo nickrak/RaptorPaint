@@ -1,11 +1,12 @@
 #include "sockethandler.h"
+#include <QDebug>
 
 // Newly received connection
 SocketHandler::SocketHandler(QTcpSocket* sock) :
-    QObject(), ds(sock)
+    QObject(), ds(sock), reading(false)
 {
     this->socket = sock;
-
+    socketHandlers << this;
     foreach (SocketHandler* handler, socketHandlers)
     {
         this->connect(this, SIGNAL(gotImageUpdate(QString,QByteArray)), handler, SLOT(sendUpdate(QString,QByteArray)));
@@ -14,7 +15,7 @@ SocketHandler::SocketHandler(QTcpSocket* sock) :
 
     this->connect(this->socket, SIGNAL(readyRead()), this, SLOT(gotDataFromSocket()));
 
-    socketHandlers << this;
+
 }
 
 // Connection Lost
@@ -34,14 +35,22 @@ SocketHandler::~SocketHandler()
 
 void SocketHandler::gotDataFromSocket()
 {
+    qDebug("Started");
+    if (reading) return;
+    qDebug("Didn't Cancel");
+    reading = true;
     for (QString type; this->socket->bytesAvailable() > 0;)
     {
+        qDebug("Got Data");
         this->ds >> type;
 
         if (type == "MSG")
         {
+            qDebug("Got Message");
             QString message;
+            qDebug(QString::number(this->socket->bytesAvailable()).toAscii().data());
             this->ds >> message;
+            qDebug(QString::number(this->socket->bytesAvailable()).toAscii().data());
             this->gotTextMessage(message.prepend("[%1] ").arg(this->name));
         }
         else if (type == "UPD")
@@ -52,17 +61,23 @@ void SocketHandler::gotDataFromSocket()
         }
         else if (type == "ID")
         {
+            qDebug("Got ID");
             this->ds >> this->name;
             this->gotTextMessage(QString("[**SERVER**] %1 joined.").arg(this->name));
         }
+        else
+        {
+            qDebug(type.prepend("BIG FUCKING ERROR: ").toAscii().data());
+        }
     }
+    reading = false;
 }
 
 // Some other client sent a text message, please forward to this client
 void SocketHandler::sendTextMessage(QString msg)
 {   
     this->m.lock();
-    this->ds << "TXT" << msg;
+    this->ds << QString("TXT") << msg;
     this->m.unlock();
 }
 
@@ -70,6 +85,6 @@ void SocketHandler::sendTextMessage(QString msg)
 void SocketHandler::sendUpdate(QString user, QByteArray buffer)
 {
     this->m.lock();
-    this->ds << "IMG" << user << buffer;
+    this->ds << QString("IMG") << user << buffer;
     this->m.unlock();
 }
