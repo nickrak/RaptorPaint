@@ -45,20 +45,18 @@ void SocketHandler::gotDataFromSocket()
     reading = true;
     for (QString type; this->socket->bytesAvailable() > 0;)
     {
-        qDebug("Got Data");
         this->ds >> type;
 
         if (type == "MSG")
         {
             qDebug("Got Message");
             QString message;
-            qDebug(QString::number(this->socket->bytesAvailable()).toAscii().data());
             this->ds >> message;
-            qDebug(QString::number(this->socket->bytesAvailable()).toAscii().data());
             this->gotTextMessage(message.prepend("[%1] ").arg(this->name));
         }
         else if (type == "UPD")
         {
+            qDebug("Got Update");
             QByteArray buffer;
             this->ds >> buffer;
             this->gotImageUpdate(this->name, buffer);
