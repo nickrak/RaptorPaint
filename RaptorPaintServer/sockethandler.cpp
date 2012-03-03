@@ -2,7 +2,7 @@
 
 // Newly received connection
 SocketHandler::SocketHandler(QTcpSocket* sock) :
-    QThread(), ds(sock)
+    QObject(), ds(sock)
 {
     this->socket = sock;
 
