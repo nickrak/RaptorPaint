@@ -1,17 +1,17 @@
 #ifndef SOCKETHANDLER_H
 #define SOCKETHANDLER_H
 
-#include <QThread>
 #include <QTcpSocket>
 #include <QList>
 #include <QQueue>
 #include <QMap>
 #include <QList>
 #include <QByteArray>
+#include <QMutex>
 
 typedef QQueue<QByteArray> QByteArrayQueue;
 
-class SocketHandler : private QThread
+class SocketHandler : public QObject
 {
     Q_OBJECT
 public:
@@ -27,16 +27,18 @@ public slots:
     void sendTextMessage(QString msg);
     void sendUpdate(QString user, QByteArray buffer);
 
+private slots:
+    void gotDataFromSocket();
+
 private:
     QTcpSocket* socket;
+    QMutex m;
     QDataStream ds;
     bool keepAlive;
     QString name;
 
     QQueue<QString> pendingMessages;
     QMap<QString, QByteArrayQueue> pendingUpdates;
-
-    void run();
 };
 
 static QList<SocketHandler*> socketHandlers;
