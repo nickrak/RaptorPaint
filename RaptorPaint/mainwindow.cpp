@@ -15,6 +15,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+// Got message from server
 void MainWindow::gotTextMessage(QString msg)
 {
     if(msg.startsWith(QString("[%1]").arg(this->cm->getName())))

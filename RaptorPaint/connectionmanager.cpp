@@ -7,6 +7,7 @@ ConnectionManager::ConnectionManager() :
     this->socket.moveToThread(this);
 }
 
+// Send text message to server
 void ConnectionManager::sendTextMessage(QString message)
 {
     if(this->socket.isOpen())
@@ -16,6 +17,7 @@ void ConnectionManager::sendTextMessage(QString message)
     }
 }
 
+// Disconnect from the server
 void ConnectionManager::disconnect()
 {
     if(this->socket.isOpen())
@@ -25,6 +27,7 @@ void ConnectionManager::disconnect()
     }
 }
 
+// Open the connection window
 void ConnectionManager::openConnectionWindow()
 {
     ConnectionWindow* cw = new ConnectionWindow();
@@ -32,16 +35,19 @@ void ConnectionManager::openConnectionWindow()
     cw->show();
 }
 
+// Connect to the server
 void ConnectionManager::connectionWindowResponce(QString username, QString hostname)
 {
     this->socket.connectToHost(hostname, 24554);
 }
 
+// Set mute for some user
 void ConnectionManager::setMute(QString name, bool mute = true)
 {
     mutes[name] = mute;
 }
 
+// Get name
 QString ConnectionManager::getName()
 {
     return this->name;
@@ -57,6 +63,7 @@ void ConnectionManager::run()
             QString messageType;
             ds >> messageType;
 
+            // Read text message from server
             if(messageType == "TXT")
             {
                 QString msg;
@@ -64,6 +71,7 @@ void ConnectionManager::run()
                 int c = msg.indexOf("]");
                 QString name = msg.left(c-1).right(c-2);
 
+                // Ignore the message if user has been muted
                 if(!mutes[name])
                 {
                     this->gotTextMessage(msg);
