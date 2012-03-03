@@ -64,7 +64,7 @@ void ConnectionManager::run()
 
     ds << QString("ID") << this->name;
 
-    for(keepAlive = true; keepAlive; this->msleep(1000))
+    for(keepAlive = true; keepAlive; this->msleep(100))
     {
         for (QString msg("MSG"); !this->outboundMessages.isEmpty();)
         {
