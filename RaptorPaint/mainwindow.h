@@ -19,6 +19,7 @@ public:
 private slots:
     void gotTextMessage(QString msg);
     void mnuConnect();
+    void txtInputReturnPressed();
     
 private:
     Ui::MainWindow *ui;

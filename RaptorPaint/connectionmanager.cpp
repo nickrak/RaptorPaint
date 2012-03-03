@@ -1,6 +1,8 @@
 #include "connectionmanager.h"
 #include "connectionwindow.h"
 
+#include <QDebug>
+
 ConnectionManager::ConnectionManager() :
     QThread()
 {
@@ -9,11 +11,9 @@ ConnectionManager::ConnectionManager() :
 // Send text message to server
 void ConnectionManager::sendTextMessage(QString message)
 {
-    if(this->socket.isOpen())
-    {
-        QDataStream ds(&this->socket);
-        ds  << "MSG" << message;
-    }
+    this->txtQueue.lock();
+    this->outboundMessages.enqueue(message);
+    this->txtQueue.unlock();
 }
 
 // Disconnect from the server
@@ -37,9 +37,10 @@ void ConnectionManager::openConnectionWindow()
 // Connect to the server
 void ConnectionManager::connectionWindowResponce(QString username, QString hostname)
 {
-    this->socket.connectToHost(hostname, 24554);
+    this->name = username;
     this->start();
     this->socket.moveToThread(this);
+    this->socket.connectToHost(hostname, 24554);
 }
 
 // Set mute for some user
@@ -56,19 +57,36 @@ QString ConnectionManager::getName()
 
 void ConnectionManager::run()
 {
-    for (; this->socket.thread() != this; this->usleep(10));
+    for (; this->socket.thread() != this; this->msleep(10));
+    for (; this->socket.state() != QTcpSocket::ConnectedState; this->msleep(10));
+
+    qDebug("Thread Running");
 
     QDataStream ds(&this->socket);
-    for(keepAlive = true; keepAlive;)
+
+    ds << QString("ID") << this->name;
+
+    for(keepAlive = true; keepAlive; this->msleep(1000))
     {
+        qDebug("Loop");
+        for (QString msg("MSG"); !this->outboundMessages.isEmpty();)
+        {
+            this->txtQueue.lock();
+            qDebug("Sending Message");
+            ds << msg << this->outboundMessages.dequeue();
+            this->txtQueue.unlock();
+        }
+
         if(this->socket.bytesAvailable() > 0)
         {
+            qDebug("Got Data");
             QString messageType;
             ds >> messageType;
 
             // Read text message from server
             if(messageType == "TXT")
             {
+                qDebug("--- Got Text Message");
                 QString msg;
                 ds >> msg;
                 int c = msg.indexOf("]");
@@ -80,6 +98,10 @@ void ConnectionManager::run()
                     this->gotTextMessage(msg);
                 }
 
+            }
+            else
+            {
+                qDebug(messageType.prepend("BIG FUCKING ERROR: ").toAscii().data());
             }
         }
     }

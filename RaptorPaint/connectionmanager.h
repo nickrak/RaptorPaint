@@ -10,6 +10,7 @@
 #include <QThread>
 #include <QMap>
 #include <QImage>
+#include <QMutex>
 
 class ConnectionManager : public QThread
 {
@@ -29,6 +30,8 @@ private:
   void run();
   QMap<QString, QImage> layers;
   QMap<QString, bool> mutes;
+  QMutex txtQueue;
+  QQueue<QString> outboundMessages;
   QTcpSocket socket;
   bool keepAlive;
   QString name;
