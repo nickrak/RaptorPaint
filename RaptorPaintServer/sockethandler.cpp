@@ -1,5 +1,6 @@
 #include "sockethandler.h"
 
+// Newly received connection
 SocketHandler::SocketHandler(QTcpSocket* sock) :
     QThread(), ds(sock)
 {
@@ -18,6 +19,7 @@ SocketHandler::SocketHandler(QTcpSocket* sock) :
     socketHandlers << this;
 }
 
+// Connection Lost
 SocketHandler::~SocketHandler()
 {
     socketHandlers.removeAll(this);
@@ -37,14 +39,19 @@ SocketHandler::~SocketHandler()
 
 void SocketHandler::run()
 {
+    // Wait for socket to be transfered to this thread
     for (; this->socket->thread() != this; this->usleep(10));
+
     for (this->keepAlive = true; this->keepAlive; this->usleep(100))
     {
+
+        // Send all pending txt messages to client
         for (const QString txt("TXT"); !this->pendingMessages.isEmpty(); )
         {
             this->ds << txt << this->pendingMessages.dequeue();
         }
 
+        // Send all pending image updates to client
         foreach (QString user, this->pendingUpdates.keys())
         {
             for (const QString img("IMG"); !this->pendingUpdates[user].isEmpty(); )
@@ -53,6 +60,7 @@ void SocketHandler::run()
             }
         }
 
+        // Read all incoming messages from clients
         for (QString type; this->socket->bytesAvailable() > 0;)
         {
             this->ds >> type;
@@ -78,11 +86,13 @@ void SocketHandler::run()
     }
 }
 
+// Some other client sent a text message, please forward to this client
 void SocketHandler::sendTextMessage(QString msg)
 {
     this->pendingMessages << msg;
 }
 
+// Some other client updated image, please forward to this client
 void SocketHandler::sendUpdate(QString user, QByteArray buffer)
 {
     if (!this->pendingUpdates.contains(user)) this->pendingUpdates[user] = QQueue<QByteArray>();

@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+// Constructor
 MainWindow::MainWindow() :
     QMainWindow(),
     ui(new Ui::MainWindow)
@@ -12,6 +13,7 @@ MainWindow::MainWindow() :
     this->connect(&this->server, SIGNAL(newConnection()), this, SLOT(newConnection()));
 }
 
+// Server got new connection from a client
 void MainWindow::newConnection()
 {
     QTcpSocket* sock = this->server.nextPendingConnection();
