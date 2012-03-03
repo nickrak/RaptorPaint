@@ -9,8 +9,14 @@ SocketHandler::SocketHandler(QTcpSocket* sock) :
     socketHandlers << this;
     foreach (SocketHandler* handler, socketHandlers)
     {
-        this->connect(this, SIGNAL(gotImageUpdate(QString,QByteArray)), handler, SLOT(sendUpdate(QString,QByteArray)));
-        this->connect(this, SIGNAL(gotTextMessage(QString)), this, SLOT(sendTextMessage(QString)));
+        this->connect(handler, SIGNAL(gotImageUpdate(QString,QByteArray)), this, SLOT(sendUpdate(QString,QByteArray)));
+        this->connect(handler, SIGNAL(gotTextMessage(QString)), this, SLOT(sendTextMessage(QString)));
+
+        if (handler != this)
+        {
+            this->connect(this, SIGNAL(gotImageUpdate(QString,QByteArray)), handler, SLOT(sendUpdate(QString,QByteArray)));
+            this->connect(this, SIGNAL(gotTextMessage(QString)), handler, SLOT(sendTextMessage(QString)));
+        }
     }
 
     this->connect(this->socket, SIGNAL(readyRead()), this, SLOT(gotDataFromSocket()));
