@@ -60,33 +60,27 @@ void ConnectionManager::run()
     for (; this->socket.thread() != this; this->msleep(10));
     for (; this->socket.state() != QTcpSocket::ConnectedState; this->msleep(10));
 
-    qDebug("Thread Running");
-
     QDataStream ds(&this->socket);
 
     ds << QString("ID") << this->name;
 
     for(keepAlive = true; keepAlive; this->msleep(1000))
     {
-        qDebug("Loop");
         for (QString msg("MSG"); !this->outboundMessages.isEmpty();)
         {
             this->txtQueue.lock();
-            qDebug("Sending Message");
             ds << msg << this->outboundMessages.dequeue();
             this->txtQueue.unlock();
         }
 
         if(this->socket.bytesAvailable() > 0)
         {
-            qDebug("Got Data");
             QString messageType;
             ds >> messageType;
 
             // Read text message from server
             if(messageType == "TXT")
             {
-                qDebug("--- Got Text Message");
                 QString msg;
                 ds >> msg;
                 int c = msg.indexOf("]");

@@ -41,9 +41,7 @@ SocketHandler::~SocketHandler()
 
 void SocketHandler::gotDataFromSocket()
 {
-    qDebug("Started");
     if (reading) return;
-    qDebug("Didn't Cancel");
     reading = true;
     for (QString type; this->socket->bytesAvailable() > 0;)
     {

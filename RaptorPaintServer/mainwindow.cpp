@@ -26,8 +26,7 @@ void MainWindow::newConnection()
     }
 
     qDebug("Got Connection!");
-   SocketHandler* sh =  new SocketHandler(sock);
-    qDebug("Sockethandler made!");
+    SocketHandler* sh =  new SocketHandler(sock);
     this->connect(sh, SIGNAL(gotTextMessage(QString)),this,SLOT(textMessage(QString)));
 }
 
