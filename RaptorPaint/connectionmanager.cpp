@@ -4,7 +4,6 @@
 ConnectionManager::ConnectionManager() :
     QThread()
 {
-    this->socket.moveToThread(this);
 }
 
 // Send text message to server
@@ -39,6 +38,8 @@ void ConnectionManager::openConnectionWindow()
 void ConnectionManager::connectionWindowResponce(QString username, QString hostname)
 {
     this->socket.connectToHost(hostname, 24554);
+    this->start();
+    this->socket.moveToThread(this);
 }
 
 // Set mute for some user
@@ -55,6 +56,8 @@ QString ConnectionManager::getName()
 
 void ConnectionManager::run()
 {
+    for (; this->socket.thread() != this; this->usleep(10));
+
     QDataStream ds(&this->socket);
     for(keepAlive = true; keepAlive;)
     {

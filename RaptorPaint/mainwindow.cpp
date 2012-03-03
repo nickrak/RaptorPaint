@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include "connectionwindow.h"
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
@@ -8,11 +10,17 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     this->connect(this->cm,SIGNAL(gotTextMessage(QString)),this,SLOT(gotTextMessage(QString)));
+    this->connect(ui->actionConnect_Host, SIGNAL(triggered()), this, SLOT(mnuConnect()));
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::mnuConnect()
+{
+    this->cm->openConnectionWindow();
 }
 
 // Got message from server
