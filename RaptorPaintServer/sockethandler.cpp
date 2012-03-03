@@ -15,8 +15,6 @@ SocketHandler::SocketHandler(QTcpSocket* sock) :
         this->connect(this, SIGNAL(gotTextMessage(QString)), this, SLOT(sendTextMessage(QString)));
     }
 
-    this->gotTextMessage(QString("[**SERVER**] %1 joined.").arg(this->name));
-
     socketHandlers << this;
 }
 
@@ -39,7 +37,7 @@ SocketHandler::~SocketHandler()
 
 void SocketHandler::run()
 {
-    this->usleep(100);
+    for (; this->socket->thread() != this; this->usleep(10));
     for (this->keepAlive = true; this->keepAlive; this->usleep(100))
     {
         for (const QString txt("TXT"); !this->pendingMessages.isEmpty(); )
@@ -70,6 +68,11 @@ void SocketHandler::run()
                 QByteArray buffer;
                 this->ds >> buffer;
                 this->gotImageUpdate(this->name, buffer);
+            }
+            else if (type == "ID")
+            {
+                this->ds >> this->name;
+                this->gotTextMessage(QString("[**SERVER**] %1 joined.").arg(this->name));
             }
         }
     }
