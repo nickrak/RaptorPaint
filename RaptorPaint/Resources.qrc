@@ -2,4 +2,8 @@
     <qresource prefix="/">
         <file>raptor.png</file>
     </qresource>
+    <qresource prefix="/userIcons">
+        <file>muted.png</file>
+        <file>unmuted.png</file>
+    </qresource>
 </RCC>
