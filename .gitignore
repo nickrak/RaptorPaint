@@ -4,3 +4,4 @@
 moc_*
 Makefile*
 ui_*.h
+qrc_*.cpp
