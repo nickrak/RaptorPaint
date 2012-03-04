@@ -8,7 +8,9 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    cm(new ConnectionManager)
+    cm(new ConnectionManager),
+    muted(QIcon(":/userIcons/muted.png")),
+    unmuted(QIcon(":/userIcons/unmuted.png"))
 {
     ui->setupUi(this);
     this->connect(this->cm, SIGNAL(gotTextMessage(QString)), this, SLOT(gotTextMessage(QString)));
@@ -17,6 +19,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->connect(this->cm, SIGNAL(userJoined(QString)), this, SLOT(userJoined(QString)));
     this->connect(this->cm, SIGNAL(userLeft(QString)), this, SLOT(userLeft(QString)));
+
+    this->connect(ui->userList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(userMuteToggle(QListWidgetItem*)));
 }
 
 MainWindow::~MainWindow()
@@ -30,6 +34,13 @@ void MainWindow::txtInputReturnPressed()
     ui->input->setText("");
 }
 
+void MainWindow::userMuteToggle(QListWidgetItem *item)
+{
+    QString user = item->text();
+    bool mute = this->cm->toggleMute(user);
+    item->setIcon(mute ? this->muted : this->unmuted);
+}
+
 void MainWindow::mnuConnect()
 {
     this->cm->openConnectionWindow();
@@ -40,7 +51,7 @@ void MainWindow::userJoined(QString name)
     qDebug("Join");
     qDebug(name.toAscii().data());
     if (this->listItems.contains(name)) return;
-    QListWidgetItem* item = new QListWidgetItem(QIcon(":/userIcons/unmuted.png"), name, ui->userList);
+    QListWidgetItem* item = new QListWidgetItem(this->unmuted, name, ui->userList);
     this->listItems[name] = item;
 }
 

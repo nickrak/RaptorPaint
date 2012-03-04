@@ -43,10 +43,16 @@ void ConnectionManager::connectionWindowResponce(QString username, QString hostn
     this->socket.connectToHost(hostname, 24554);
 }
 
-// Set mute for some user
-void ConnectionManager::setMute(QString name, bool mute = true)
+// Toggles mute for the specified user and returns mute status
+bool ConnectionManager::toggleMute(QString name)
 {
-    mutes[name] = mute;
+    if (name != this->name)
+    {
+        bool newMute = !this->mutes[name];
+        this->mutes[name] = newMute;
+        return newMute;
+    }
+    return false;
 }
 
 // Get name
@@ -85,6 +91,11 @@ void ConnectionManager::run()
                 ds >> msg;
                 int c = msg.indexOf("]");
                 QString name = msg.left(c).right(c-1);
+
+                if (name != "**SERVER**")
+                {
+                    this->userJoined(name);
+                }
 
                 qDebug(QString(name).prepend("TXT from ").toAscii().data());
                 if (name == "**SERVER**")

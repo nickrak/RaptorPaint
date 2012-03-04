@@ -26,10 +26,14 @@ private slots:
 
     void userLeft(QString name);
     void userJoined(QString name);
+    void userMuteToggle(QListWidgetItem* item);
     
 private:
     Ui::MainWindow *ui;
     ConnectionManager *cm;
+
+    QIcon muted;
+    QIcon unmuted;
 
     QMap<QString, QListWidgetItem*> listItems;
 };

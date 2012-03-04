@@ -20,7 +20,7 @@ public:
   void openConnectionWindow();
   void disconnect();
   void sendTextMessage(QString message);
-  void setMute(QString name, bool mute);
+  bool toggleMute(QString name);
   QString getName();
 
 private slots:
