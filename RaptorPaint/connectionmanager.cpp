@@ -84,7 +84,7 @@ void ConnectionManager::run()
                 QString msg;
                 ds >> msg;
                 int c = msg.indexOf("]");
-                QString name = msg.left(c-1).right(c-2);
+                QString name = msg.left(c).right(c-1);
 
                 // Ignore the message if user has been muted
                 if(!mutes[name])
