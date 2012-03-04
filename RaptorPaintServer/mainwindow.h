@@ -6,6 +6,7 @@
 #include <QTcpSocket>
 #include <QMap>
 #include <QList>
+#include <QListWidgetItem>
 
 #include "sockethandler.h"
 
@@ -30,6 +31,11 @@ private:
 
     QTcpServer server;
     QMap<QString, QTcpSocket*> clients;
+
+    void userJoined(QString user);
+    void userLeft(QString user);
+
+    QMap<QString, QListWidgetItem*> listItems;
 };
 
 #endif // MAINWINDOW_H

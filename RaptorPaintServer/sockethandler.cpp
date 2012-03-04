@@ -42,6 +42,11 @@ SocketHandler::~SocketHandler()
     this->socket->deleteLater();
 }
 
+QString SocketHandler::getName()
+{
+    return this->name;
+}
+
 void SocketHandler::gotDataFromSocket()
 {
     if (reading) return;

@@ -17,6 +17,8 @@ class SocketHandler : public QObject
 public:
     SocketHandler(QTcpSocket* sock);
     ~SocketHandler();
+
+    QString getName();
     
 signals:
     void gotImageUpdate(QString user, QByteArray buffer);
