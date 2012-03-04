@@ -40,6 +40,9 @@ private:
 signals:
   void gotTextMessage(QString message);
   void gotImageUpdate();
+  void userJoined(QString user);
+  void userLeft(QString user);
+
 public slots:
     
 };

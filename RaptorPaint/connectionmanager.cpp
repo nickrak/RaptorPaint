@@ -86,6 +86,24 @@ void ConnectionManager::run()
                 int c = msg.indexOf("]");
                 QString name = msg.left(c).right(c-1);
 
+                qDebug(QString(name).prepend("TXT from ").toAscii().data());
+                if (name == "**SERVER**")
+                {
+                    QStringList parts = msg.split(" ", QString::SkipEmptyParts);
+
+                    if (parts.last() == "joined.")
+                    {
+                        QString name = parts[parts.count() - 2];
+                        this->userJoined(name);
+                    }
+                    else if (parts.last() == "left.")
+                    {
+                        QString name = parts[parts.count() - 2];
+                        this->userLeft(name);
+                    }
+
+                }
+
                 // Ignore the message if user has been muted
                 if(!mutes[name])
                 {
