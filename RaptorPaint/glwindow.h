@@ -24,6 +24,8 @@ public slots:
 private:
     QMap<QString, QImage>* stack;
 
+    QPoint lastLocation;
+
     double xOffset;
     double yOffset;
     double zoomFactor;

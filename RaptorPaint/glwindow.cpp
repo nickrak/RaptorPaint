@@ -9,6 +9,7 @@ GLWindow::GLWindow(QWidget* parent) :
     this->xOffset = 100.0;
     this->yOffset = 100.0;
     this->zoomFactor = 1.0;
+    this->setMouseTracking(true);
 }
 
 void GLWindow::setImageStack(QMap<QString, QImage>* stack = 0)
@@ -31,30 +32,22 @@ void GLWindow::adjustZoom(double amount)
 
 void GLWindow::mouseMoveEvent(QMouseEvent* e)
 {
-    if (QApplication::keyboardModifiers().testFlag(Qt::ShiftModifier))
-    {
-        static QPoint lastLocation;
-        static bool lastLocationKnown = false;
+    bool moveThisCycle = QApplication::keyboardModifiers().testFlag(Qt::ShiftModifier) && e->buttons().testFlag(Qt::LeftButton);
+    double rx = e->pos().x();
+    double ry = e->pos().y();
 
-        if (e->buttons().testFlag(Qt::LeftButton))
-        {
-            if (lastLocationKnown)
-            {
-                double dx = e->pos().x() - lastLocation.x();
-                double dy = e->pos().y() - lastLocation.y();
-                this->adjustOffset(dx, dy);
-            }
-            else
-            {
-                lastLocationKnown = true;
-            }
-            lastLocation = e->pos();
-        }
-        else
-        {
-            lastLocationKnown = false;
-        }
+    if (moveThisCycle)
+    {
+        double dx = rx - this->lastLocation.x();
+        double dy = ry - this->lastLocation.y();
+        this->adjustOffset(dx, dy);
     }
+
+    this->lastLocation.setX(rx);
+    this->lastLocation.setY(ry);
+
+    static long i = 0;
+    std::cout << i++ << std::flush;
 }
 
 void GLWindow::initializeGL()
@@ -82,9 +75,6 @@ void GLWindow::paintGL()
 
     double w = (double)this->width();
     double h = (double)this->height();
-
-    std::cout << w << std::endl;
-    std::cout << h << std::endl;
 
     glOrtho(0, w, h, 0, -100.0, 100.0);
     glMatrixMode(GL_MODELVIEW);
