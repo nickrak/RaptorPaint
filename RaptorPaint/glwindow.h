@@ -15,8 +15,18 @@ public:
     void paintGL();
     void setImageStack(QMap<QString, QImage>* stack);
 
+    void mouseMoveEvent(QMouseEvent* e);
+
+public slots:
+    void adjustZoom(double amount);
+    void adjustOffset(double x, double y);
+
 private:
     QMap<QString, QImage>* stack;
+
+    double xOffset;
+    double yOffset;
+    double zoomFactor;
 };
 
 #endif // GLWINDOW_H
