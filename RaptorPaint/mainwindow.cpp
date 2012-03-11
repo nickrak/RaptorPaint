@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
     unmuted(QIcon(":/userIcons/unmuted.png"))
 {
     ui->setupUi(this);
+
     this->connect(this->cm, SIGNAL(gotTextMessage(QString)), this, SLOT(gotTextMessage(QString)));
     this->connect(ui->actionConnect_Host, SIGNAL(triggered()), this, SLOT(mnuConnect()));
     this->connect(ui->input, SIGNAL(returnPressed()), this, SLOT(txtInputReturnPressed()));

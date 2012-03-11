@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network
+QT       += core gui network opengl
 
 TARGET = RaptorPaint
 TEMPLATE = app
@@ -13,13 +13,15 @@ TEMPLATE = app
 SOURCES += main.cpp \
     mainwindow.cpp \
     connectionmanager.cpp \
-    connectionwindow.cpp
+    connectionwindow.cpp \
+    glwindow.cpp
 
 HEADERS  += \
     netpaintinterface.h \
     mainwindow.h \
     connectionmanager.h \
-    connectionwindow.h
+    connectionwindow.h \
+    glwindow.h
 
 FORMS    += \
     mainwindow.ui \

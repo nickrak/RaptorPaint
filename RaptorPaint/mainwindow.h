@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "connectionmanager.h"
+#include "glwindow.h"
 
 #include <QMap>
 #include <QListWidgetItem>
