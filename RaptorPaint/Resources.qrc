@@ -6,4 +6,10 @@
         <file>muted.png</file>
         <file>unmuted.png</file>
     </qresource>
+    <qresource prefix="/toolbox">
+        <file>eraser.png</file>
+        <file>paintbrush.png</file>
+        <file>pencil.png</file>
+        <file>serif-t.png</file>
+    </qresource>
 </RCC>
