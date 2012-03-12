@@ -18,7 +18,8 @@ public:
     void mouseMoveEvent(QMouseEvent* e);
 
 public slots:
-    void adjustZoom(double amount);
+    void zoomIn();
+    void zoomOut();
     void adjustOffset(double x, double y);
 
 private:

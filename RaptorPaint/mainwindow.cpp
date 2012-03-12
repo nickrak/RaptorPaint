@@ -22,6 +22,12 @@ MainWindow::MainWindow(QWidget *parent) :
     this->connect(this->cm, SIGNAL(userLeft(QString)), this, SLOT(userLeft(QString)));
 
     this->connect(ui->userList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(userMuteToggle(QListWidgetItem*)));
+
+    ui->mnuIn->setShortcut(QKeySequence("Ctrl+="));
+    ui->mnuOut->setShortcut(QKeySequence("Ctrl+-"));
+
+    this->connect(ui->mnuIn, SIGNAL(triggered()), ui->paintArea, SLOT(zoomIn()));
+    this->connect(ui->mnuOut, SIGNAL(triggered()), ui->paintArea, SLOT(zoomOut()));
 }
 
 MainWindow::~MainWindow()

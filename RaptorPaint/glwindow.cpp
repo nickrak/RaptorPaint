@@ -1,6 +1,7 @@
 #include "glwindow.h"
 #include <iostream>
 #include <QMouseEvent>
+#include <QKeyEvent>
 #include <QApplication>
 
 GLWindow::GLWindow(QWidget* parent) :
@@ -8,8 +9,27 @@ GLWindow::GLWindow(QWidget* parent) :
 {
     this->xOffset = 100.0;
     this->yOffset = 100.0;
-    this->zoomFactor = 1.0;
+    this->zoomFactor = 100.0;
     this->setMouseTracking(true);
+}
+
+void GLWindow::zoomIn()
+{
+    this->zoomFactor *= 1.25;
+
+    this->repaint();
+}
+
+void GLWindow::zoomOut()
+{
+    this->zoomFactor *= 0.75;
+
+    if (this->zoomFactor <= 1)
+    {
+        this->zoomFactor = 1;
+    }
+
+    this->repaint();
 }
 
 void GLWindow::setImageStack(QMap<QString, QImage>* stack = 0)
@@ -21,12 +41,6 @@ void GLWindow::adjustOffset(double x, double y)
 {
     this->xOffset += x;
     this->yOffset += y;
-    this->repaint();
-}
-
-void GLWindow::adjustZoom(double amount)
-{
-    this->zoomFactor += amount / 10.0;
     this->repaint();
 }
 
@@ -45,9 +59,6 @@ void GLWindow::mouseMoveEvent(QMouseEvent* e)
 
     this->lastLocation.setX(rx);
     this->lastLocation.setY(ry);
-
-    static long i = 0;
-    std::cout << i++ << std::flush;
 }
 
 void GLWindow::initializeGL()
@@ -75,12 +86,14 @@ void GLWindow::paintGL()
 
     double w = (double)this->width();
     double h = (double)this->height();
+    double z = (double)this->zoomFactor / 100.0;
 
     glOrtho(0, w, h, 0, -100.0, 100.0);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
     glTranslated(this->xOffset, this->yOffset, 0);
+    glScaled(z, z, 1);
 
     glColor3f(1, 1, 1);
     glBegin(GL_POLYGON);
