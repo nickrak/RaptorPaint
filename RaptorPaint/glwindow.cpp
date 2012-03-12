@@ -4,6 +4,9 @@
 #include <QKeyEvent>
 #include <QApplication>
 
+#define WIDTH 3000
+#define HEIGHT 3000
+
 GLWindow::GLWindow(QWidget* parent) :
     QGLWidget(parent), stack(0)
 {
@@ -98,9 +101,9 @@ void GLWindow::paintGL()
     glColor3f(1, 1, 1);
     glBegin(GL_POLYGON);
     glVertex3i(0, 0, 100);
-    glVertex3i(3000, 0, 100);
-    glVertex3i(3000, 3000, 100);
-    glVertex3i(0, 3000, 100);
+    glVertex3i(WIDTH, 0, 100);
+    glVertex3i(WIDTH, HEIGHT, 100);
+    glVertex3i(0, HEIGHT, 100);
     glEnd();
 
     if (this->stack != 0)
