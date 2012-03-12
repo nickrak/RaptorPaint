@@ -22,6 +22,9 @@ public slots:
     void zoomOut();
     void adjustOffset(double x, double y);
 
+signals:
+    void drawHere(double x, double y);
+
 private:
     QMap<QString, QImage>* stack;
 
