@@ -7,7 +7,7 @@
 #define LOCAL_TEST
 
 ConnectionManager::ConnectionManager() :
-    QThread()
+    QThread(), my_Image(QImage(WIDTH, HEIGHT, QImage::Format_ARGB32_Premultiplied))
 {
 #ifdef LOCAL_TEST
     this->connectionWindowResponce("localuser", "");
@@ -70,6 +70,16 @@ bool ConnectionManager::toggleMute(QString name)
 QString ConnectionManager::getName()
 {
     return this->name;
+}
+
+ImageStack* ConnectionManager::getLayerPtr()
+{
+    return &this->layers;
+}
+
+QImage* ConnectionManager::myImage()
+{
+    return &this->my_Image;
 }
 
 void ConnectionManager::run()

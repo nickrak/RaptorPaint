@@ -12,6 +12,8 @@
 #include <QImage>
 #include <QMutex>
 
+#include "glwindow.h"
+
 class ConnectionManager : public QThread
 {
     Q_OBJECT
@@ -22,19 +24,22 @@ public:
   void sendTextMessage(QString message);
   bool toggleMute(QString name);
   QString getName();
+  ImageStack* getLayerPtr();
+  QImage* myImage();
 
 private slots:
   void connectionWindowResponce(QString username, QString hostname);
 
 private:
   void run();
-  QMap<QString, QImage> layers;
+  ImageStack layers;
   QMap<QString, bool> mutes;
   QMutex txtQueue;
   QQueue<QString> outboundMessages;
   QTcpSocket socket;
   bool keepAlive;
   QString name;
+  QImage my_Image;
 
 
 signals:

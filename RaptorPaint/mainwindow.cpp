@@ -4,6 +4,8 @@
 #include "connectionwindow.h"
 
 #include <QDebug>
+#include <QRgb>
+#include <iostream>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -13,6 +15,8 @@ MainWindow::MainWindow(QWidget *parent) :
     unmuted(QIcon(":/userIcons/unmuted.png"))
 {
     ui->setupUi(this);
+
+    this->cm->myImage()->fill(0x80FF00FF);
 
     this->connect(this->cm, SIGNAL(gotTextMessage(QString)), this, SLOT(gotTextMessage(QString)));
     this->connect(ui->actionConnect_Host, SIGNAL(triggered()), this, SLOT(mnuConnect()));
@@ -28,11 +32,39 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->connect(ui->mnuIn, SIGNAL(triggered()), ui->paintArea, SLOT(zoomIn()));
     this->connect(ui->mnuOut, SIGNAL(triggered()), ui->paintArea, SLOT(zoomOut()));
+
+    ui->paintArea->setImageStack(this->cm->getLayerPtr());
+
+    this->connect(ui->paintArea, SIGNAL(drawHere(double,double)), this, SLOT(drawHere(double,double)));
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::drawHere(double x, double y)
+{
+    QImage* img = this->cm->myImage();
+    if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT) return;
+    if (img->isNull()) return;
+
+    switch (this->selectedTool)
+    {
+    case BRUSH:
+    case PENCIL:
+        img->setPixel(x, y, 0x88888888);
+        std::cout << "here" << std::endl;
+        break;
+    case ERASER:
+        img->setPixel(x, y, 0);
+        break;
+    case TYPE:
+        break;
+    default:
+        img->setPixel(x, y, 0xFF);
+        break;
+    }
 }
 
 void MainWindow::txtInputReturnPressed()

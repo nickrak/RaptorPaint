@@ -12,6 +12,14 @@ namespace Ui {
 class MainWindow;
 }
 
+typedef enum
+{
+    BRUSH = 0,
+    PENCIL = 1,
+    ERASER = 2,
+    TYPE = 3
+} RaptorPaintTool;
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -28,6 +36,8 @@ private slots:
     void userLeft(QString name);
     void userJoined(QString name);
     void userMuteToggle(QListWidgetItem* item);
+
+    void drawHere(double x, double y);
     
 private:
     Ui::MainWindow *ui;
@@ -35,6 +45,9 @@ private:
 
     QIcon muted;
     QIcon unmuted;
+
+    RaptorPaintTool selectedTool;
+    int selectedColor;
 
     QMap<QString, QListWidgetItem*> listItems;
 };
