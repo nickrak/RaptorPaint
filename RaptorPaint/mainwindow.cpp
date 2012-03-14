@@ -16,7 +16,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    this->cm->myImage()->fill(0x80FF00FF);
+    this->cm->myImage()->fill(0x00FF0000);
 
     this->connect(this->cm, SIGNAL(gotTextMessage(QString)), this, SLOT(gotTextMessage(QString)));
     this->connect(ui->actionConnect_Host, SIGNAL(triggered()), this, SLOT(mnuConnect()));
@@ -29,9 +29,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->mnuIn->setShortcut(QKeySequence("Ctrl+="));
     ui->mnuOut->setShortcut(QKeySequence("Ctrl+-"));
+    ui->mnuActual->setShortcut(QKeySequence("Ctrl+0"));
 
     this->connect(ui->mnuIn, SIGNAL(triggered()), ui->paintArea, SLOT(zoomIn()));
     this->connect(ui->mnuOut, SIGNAL(triggered()), ui->paintArea, SLOT(zoomOut()));
+    this->connect(ui->mnuActual, SIGNAL(triggered()), ui->paintArea, SLOT(zoomActual()));
 
     ui->paintArea->setImageStack(this->cm->getLayerPtr());
 
@@ -62,7 +64,7 @@ void MainWindow::drawHere(double x, double y)
     case TYPE:
         break;
     default:
-        img->setPixel(x, y, 0xFF);
+        img->setPixel(x, y, 0xFFFF0000);
         break;
     }
 }

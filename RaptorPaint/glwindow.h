@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QGenericMatrix>
 #include <iostream>
+#include <QImage>
 
 
 #define WIDTH 1024
@@ -16,16 +17,18 @@ class GLWindow : public QWidget
     Q_OBJECT
 public:
     GLWindow(QWidget *parent);
-    void initializeGL();
-    void resizeGL(int w, int h);
-    void paintGL();
     void setImageStack(ImageStack* stack);
 
     void mouseMoveEvent(QMouseEvent* e);
 
+    void paintEvent(QPaintEvent* e);
+
+    void scroll(int dx, int dy);
+
 public slots:
     void zoomIn();
     void zoomOut();
+    void zoomActual();
     void adjustOffset(double x, double y);
 
 signals:

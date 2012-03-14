@@ -14,6 +14,9 @@
    <string>RaptorPaint</string>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="styleSheet">
+    <string notr="true">background: rgb(128,128,128);</string>
+   </property>
    <layout class="QVBoxLayout" name="verticalLayout_3">
     <property name="margin">
      <number>0</number>
@@ -55,6 +58,7 @@
     </property>
     <addaction name="mnuIn"/>
     <addaction name="mnuOut"/>
+    <addaction name="mnuActual"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -401,6 +405,11 @@
   <action name="mnuOut">
    <property name="text">
     <string>Zoom Out</string>
+   </property>
+  </action>
+  <action name="mnuActual">
+   <property name="text">
+    <string>Actual Size</string>
    </property>
   </action>
  </widget>
