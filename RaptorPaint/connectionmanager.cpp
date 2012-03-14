@@ -2,10 +2,16 @@
 #include "connectionwindow.h"
 
 #include <QDebug>
+#include "glwindow.h"
+
+#define LOCAL_TEST
 
 ConnectionManager::ConnectionManager() :
     QThread()
 {
+#ifdef LOCAL_TEST
+    this->connectionWindowResponce("localuser", "");
+#endif
 }
 
 // Send text message to server
@@ -37,10 +43,15 @@ void ConnectionManager::openConnectionWindow()
 // Connect to the server
 void ConnectionManager::connectionWindowResponce(QString username, QString hostname)
 {
+#ifdef LOCAL_TEST
+    this->name = username;
+#else
     this->name = username;
     this->start();
     this->socket.moveToThread(this);
     this->socket.connectToHost(hostname, 24554);
+#endif
+    this->layers[this->name] = &this->my_Image;
 }
 
 // Toggles mute for the specified user and returns mute status
