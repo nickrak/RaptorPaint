@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network opengl
+QT       += core gui network
 
 TARGET = RaptorPaint
 TEMPLATE = app

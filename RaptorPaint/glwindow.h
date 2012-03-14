@@ -1,9 +1,7 @@
 #ifndef GLWINDOW_H
 #define GLWINDOW_H
 
-#include <QGLWidget>
 #include <QWidget>
-#include <QGLFunctions>
 #include <QGenericMatrix>
 #include <iostream>
 
@@ -13,7 +11,7 @@
 
 typedef QMap<QString, QImage*> ImageStack;
 
-class GLWindow : public QGLWidget
+class GLWindow : public QWidget
 {
     Q_OBJECT
 public:
@@ -41,8 +39,6 @@ private:
     double xOffset;
     double yOffset;
     double zoomFactor;
-
-    unsigned int* textures;
 
     template<int N, int M, class T>
     static void printMatrix(QGenericMatrix<N,M,T> m)
