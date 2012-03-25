@@ -38,6 +38,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->mnuIn->setShortcut(QKeySequence("Ctrl+="));
     ui->mnuOut->setShortcut(QKeySequence("Ctrl+-"));
     ui->mnuActual->setShortcut(QKeySequence("Ctrl+0"));
+    ui->actionSave->setShortcut(QKeySequence("Ctrl+S"));
+    ui->actionClose->setShortcut(QKeySequence("Ctrl+W"));
+    ui->actionConnect_Host->setShortcut(QKeySequence("Ctrl+N"));
 
     this->connect(ui->mnuIn, SIGNAL(triggered()), ui->paintArea, SLOT(zoomIn()));
     this->connect(ui->mnuOut, SIGNAL(triggered()), ui->paintArea, SLOT(zoomOut()));
