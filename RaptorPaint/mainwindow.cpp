@@ -6,6 +6,7 @@
 #include <QDebug>
 #include <QRgb>
 #include <iostream>
+#include <qmath.h>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -38,6 +39,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->paintArea->setImageStack(this->cm->getLayerPtr());
 
     this->connect(ui->paintArea, SIGNAL(drawHere(double,double)), this, SLOT(drawHere(double,double)));
+
+    this->wasDragging = false;
 }
 
 MainWindow::~MainWindow()
@@ -47,24 +50,57 @@ MainWindow::~MainWindow()
 
 void MainWindow::drawHere(double x, double y)
 {
-    QImage* img = this->cm->myImage();
-    if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT) return;
-    if (img->isNull()) return;
+    static double lx, ly;
 
+    QImage* img = this->cm->myImage();
+    if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT)
+    {
+        return;
+    }
+    if (img->isNull())
+    {
+        return;
+    }
+
+    QPainter painter(img);
+
+    if (wasDragging)
+    {
+        double cx = x - lx;
+        double cy = y - ly;
+        double cc = qSqrt(cx * cx + cy * cy); // total distance between where we are now and where we were
+        double dx = cx / cc;
+        double dy = cy / cc;
+
+        for (double cp = 0; cp < cc; cp++)
+        {
+            changeCanvas(x - dx * cp, y - dy * cp, &painter);
+        }
+    }
+    else
+    {
+        this->wasDragging = true;
+        changeCanvas(x, y, &painter);
+    }
+
+    lx = x;
+    ly = y;
+}
+
+void MainWindow::changeCanvas(double x, double y, QPainter* painter)
+{
+    QRectF r(-this->toolSize / 2.0, -this->toolSize / 2.0, this->toolSize / 2.0, this->toolSize / 2.0);
     switch (this->selectedTool)
     {
     case BRUSH:
     case PENCIL:
-        img->setPixel(x, y, 0x88888888);
-        std::cout << "here" << std::endl;
-        break;
     case ERASER:
-        img->setPixel(x, y, 0);
-        break;
     case TYPE:
-        break;
     default:
-        img->setPixel(x, y, 0xFFFF0000);
+        QRect r(x, y, 10, 10);
+        painter->setBrush(Qt::SolidPattern);
+        painter->setPen(QColor::fromRgb(0,0,0));
+        painter->drawEllipse(r);
         break;
     }
 }

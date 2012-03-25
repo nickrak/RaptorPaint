@@ -81,8 +81,8 @@ void GLWindow::mouseMoveEvent(QMouseEvent* e)
         offset(1, 2) = -this->yOffset;
 
         scale.setToIdentity();
-        scale(0, 0) = 100.0 / this->zoomFactor;
-        scale(1, 1) = 100.0 / this->zoomFactor;
+        scale(0, 0) = 1.0 / this->zoomFactor;
+        scale(1, 1) = 1.0 / this->zoomFactor;
 
         rotate.setToIdentity();
 
@@ -94,6 +94,8 @@ void GLWindow::mouseMoveEvent(QMouseEvent* e)
         QGenericMatrix<1, 3, double> n =  scale * offset * rotate * coords;
 
         this->drawHere(n(0, 0), n(1, 0));
+
+        this->repaint();
     }
 }
 
@@ -109,5 +111,4 @@ void GLWindow::paintEvent(QPaintEvent* e)
         QImage* img = (*this->stack)[name];
         p.drawImage(0, 0, *img);
     }
-
 }

@@ -6,6 +6,7 @@
 #include "glwindow.h"
 
 #include <QMap>
+#include <QPainter>
 #include <QListWidgetItem>
 
 namespace Ui {
@@ -40,6 +41,8 @@ private slots:
     void drawHere(double x, double y);
     
 private:
+    void changeCanvas(double x, double y, QPainter *painter);
+
     Ui::MainWindow *ui;
     ConnectionManager *cm;
 
@@ -48,6 +51,9 @@ private:
 
     RaptorPaintTool selectedTool;
     int selectedColor;
+    int toolSize;
+
+    bool wasDragging;
 
     QMap<QString, QListWidgetItem*> listItems;
 };
