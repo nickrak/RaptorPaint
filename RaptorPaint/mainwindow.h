@@ -39,6 +39,8 @@ private slots:
     void userMuteToggle(QListWidgetItem* item);
 
     void drawHere(double x, double y);
+
+    void saveToFile();
     
 private:
     void changeCanvas(double x, double y, QPainter *painter);

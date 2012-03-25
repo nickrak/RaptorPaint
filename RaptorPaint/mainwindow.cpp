@@ -6,7 +6,13 @@
 #include <QDebug>
 #include <QRgb>
 #include <iostream>
+
 #include <qmath.h>
+
+#include <QString>
+#include <QFileDialog>
+#include <QFile>
+#include <QPainter>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -22,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->connect(this->cm, SIGNAL(gotTextMessage(QString)), this, SLOT(gotTextMessage(QString)));
     this->connect(ui->actionConnect_Host, SIGNAL(triggered()), this, SLOT(mnuConnect()));
     this->connect(ui->input, SIGNAL(returnPressed()), this, SLOT(txtInputReturnPressed()));
+    this->connect(ui->actionSave, SIGNAL(triggered()),this, SLOT(saveToFile()));
 
     this->connect(this->cm, SIGNAL(userJoined(QString)), this, SLOT(userJoined(QString)));
     this->connect(this->cm, SIGNAL(userLeft(QString)), this, SLOT(userLeft(QString)));
@@ -152,4 +159,21 @@ void MainWindow::gotTextMessage(QString msg)
         msg = msg.prepend("<p class=\"me\">").append("</p>");
     }
     ui->chatLog->append(msg);
+}
+
+//Save File
+void MainWindow::saveToFile()
+{
+    QString fileName = QFileDialog::getSaveFileName(this, "Save Image", QDir::homePath(), "Image Files (*.png *.jpg);; All Files (*)");
+    QImage saveImage(WIDTH,HEIGHT,QImage::Format_ARGB32_Premultiplied);
+    ImageStack* layers = this->cm->getLayerPtr();
+    {
+        QPainter totalImage(&saveImage);
+        totalImage.fillRect(0,0,WIDTH,HEIGHT,QColor::fromRgb(255,255,255));
+        foreach(QString userName, layers->keys())
+        {
+            totalImage.drawImage(0,0,(*(*layers)[userName]));
+        }
+    }
+    saveImage.save(fileName);
 }
