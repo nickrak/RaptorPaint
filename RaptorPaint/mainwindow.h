@@ -50,7 +50,7 @@ private slots:
     void setToType();
     
 private:
-    void changeCanvas(double x, double y, QPainter *painter);
+    bool changeCanvas(double x, double y, QPainter *painter);
 
     Ui::MainWindow *ui;
     ConnectionManager *cm;

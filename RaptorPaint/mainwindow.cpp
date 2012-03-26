@@ -13,8 +13,8 @@
 #include <QFileDialog>
 #include <QFile>
 #include <QPainter>
-
-//#define ANTIALIAS_ON
+#include <QInputDialog>
+#include <QLineEdit>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -92,9 +92,6 @@ void MainWindow::drawHere(double x, double y)
     }
 
     QPainter painter(img);
-#if ANTIALIAS_ON
-    painter.setRenderHints((QPainter::RenderHint) 0xF);
-#endif
 
     if (wasDragging)
     {
@@ -106,20 +103,21 @@ void MainWindow::drawHere(double x, double y)
 
         for (double cp = 0; cp < cc; cp++)
         {
-            changeCanvas(x - dx * cp, y - dy * cp, &painter);
+            if (changeCanvas(x - dx * cp, y - dy * cp, &painter)) goto exiting;
         }
     }
     else
     {
         this->wasDragging = true;
-        changeCanvas(x, y, &painter);
+        if (changeCanvas(x, y, &painter)) goto exiting;
     }
 
+exiting:
     lx = x;
     ly = y;
 }
 
-void MainWindow::changeCanvas(double x, double y, QPainter* painter)
+bool MainWindow::changeCanvas(double x, double y, QPainter* painter)
 {
     double radius = this->toolSize / 2.0;
     QRectF r(x - radius, y - radius, radius * 2, radius * 2);
@@ -127,14 +125,17 @@ void MainWindow::changeCanvas(double x, double y, QPainter* painter)
     switch (this->selectedTool)
     {
     case BRUSH:
+        painter->setRenderHints((QPainter::RenderHint) 0xF, true);
         painter->setBrush(QBrush(this->selectedColor));
         painter->drawEllipse(r);
         break;
     case PENCIL:
+        painter->setRenderHints((QPainter::RenderHint) 0xF, false);
         painter->setBrush(QBrush(this->selectedColor));
         painter->drawEllipse(QRect(x, y, 1, 1));
         break;
     case ERASER:
+        painter->setRenderHints((QPainter::RenderHint) 0xF, false);
         painter->setCompositionMode(QPainter::CompositionMode_DestinationOut);
         painter->setBrush(QBrush(QColor::fromRgb(0, 0, 0, 255)));
         painter->setPen(QColor::fromRgb(0, 0, 0, 255));
@@ -142,10 +143,18 @@ void MainWindow::changeCanvas(double x, double y, QPainter* painter)
         painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
         break;
     case TYPE:
-    default:
-        std::cerr << "Something is wrong, no default brush" << std::endl;
-        break;
+        bool ok = false;
+        QString textToPrint = QInputDialog::getText(this, "Text Tool", "What would you like to type?", QLineEdit::Normal, "", &ok);
+        if (ok)
+        {
+            QFont f("Helvetica", 25);
+            f.setStyleStrategy(QFont::NoAntialias);
+            painter->setFont(f);
+            painter->drawText(x, y, WIDTH - x, HEIGHT - y, 0x1000, textToPrint);
+        }
+        return true;
     }
+    return false;
 }
 
 void MainWindow::txtInputReturnPressed()
