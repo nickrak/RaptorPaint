@@ -8,6 +8,7 @@
 #include <QMap>
 #include <QPainter>
 #include <QListWidgetItem>
+#include <QColorDialog>
 
 namespace Ui {
 class MainWindow;
@@ -48,6 +49,9 @@ private slots:
     void setToPencil();
     void setToEraser();
     void setToType();
+
+    void openColorPicker();
+    void colorSelected(QColor color);
     
 private:
     bool changeCanvas(double x, double y, QPainter *painter);
@@ -65,6 +69,8 @@ private:
     bool wasDragging;
 
     QMap<QString, QListWidgetItem*> listItems;
+
+    QColorDialog qcd;
 };
 
 #endif // MAINWINDOW_H

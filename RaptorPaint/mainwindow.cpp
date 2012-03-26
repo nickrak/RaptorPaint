@@ -15,13 +15,15 @@
 #include <QPainter>
 #include <QInputDialog>
 #include <QLineEdit>
+#include <QColorDialog>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     cm(new ConnectionManager),
     muted(QIcon(":/userIcons/muted.png")),
-    unmuted(QIcon(":/userIcons/unmuted.png"))
+    unmuted(QIcon(":/userIcons/unmuted.png")),
+    qcd(this)
 {
     ui->setupUi(this);
 
@@ -54,7 +56,9 @@ MainWindow::MainWindow(QWidget *parent) :
     this->connect(ui->pencil, SIGNAL(clicked()), this, SLOT(setToPencil()));
     this->connect(ui->eraser, SIGNAL(clicked()), this, SLOT(setToEraser()));
     this->connect(ui->type, SIGNAL(clicked()), this, SLOT(setToType()));
+    this->connect(ui->color, SIGNAL(clicked()), this, SLOT(openColorPicker()));
 
+    this->connect(&this->qcd, SIGNAL(colorSelected(QColor)), this, SLOT(colorSelected(QColor)));
 
     ui->paintArea->setImageStack(this->cm->getLayerPtr());
 
@@ -63,8 +67,8 @@ MainWindow::MainWindow(QWidget *parent) :
     this->wasDragging = false;
 
     this->selectedTool = BRUSH;
-    this->selectedColor = QColor::fromRgb(0, 0, 0);
     this->toolSize = 10.0;
+    this->colorSelected(QColor::fromRgb(0, 0, 0));
 }
 
 MainWindow::~MainWindow()
@@ -125,17 +129,19 @@ bool MainWindow::changeCanvas(double x, double y, QPainter* painter)
     switch (this->selectedTool)
     {
     case BRUSH:
-        painter->setRenderHints((QPainter::RenderHint) 0xF, true);
+        //painter->setRenderHints((QPainter::RenderHint) 0xF, true);
         painter->setBrush(QBrush(this->selectedColor));
+        painter->setPen(this->selectedColor);
         painter->drawEllipse(r);
         break;
     case PENCIL:
-        painter->setRenderHints((QPainter::RenderHint) 0xF, false);
+        //painter->setRenderHints((QPainter::RenderHint) 0xF, false);
         painter->setBrush(QBrush(this->selectedColor));
+        painter->setPen(this->selectedColor);
         painter->drawEllipse(QRect(x, y, 1, 1));
         break;
     case ERASER:
-        painter->setRenderHints((QPainter::RenderHint) 0xF, false);
+        //painter->setRenderHints((QPainter::RenderHint) 0xF, false);
         painter->setCompositionMode(QPainter::CompositionMode_DestinationOut);
         painter->setBrush(QBrush(QColor::fromRgb(0, 0, 0, 255)));
         painter->setPen(QColor::fromRgb(0, 0, 0, 255));
@@ -155,6 +161,21 @@ bool MainWindow::changeCanvas(double x, double y, QPainter* painter)
         return true;
     }
     return false;
+}
+
+void MainWindow::openColorPicker()
+{
+    this->qcd.show();
+}
+
+void MainWindow::colorSelected(QColor color)
+{
+    this->selectedColor = color;
+    QPixmap pix(ui->color->width() * 0.65, ui->color->height() * 0.65);
+    pix.fill(color);
+    QIcon icon(pix);
+    ui->color->setIcon(icon);
+    ui->color->setIconSize(QSize(ui->color->width(), ui->color->height()));
 }
 
 void MainWindow::txtInputReturnPressed()
