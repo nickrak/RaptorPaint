@@ -14,6 +14,8 @@
 #include <QFile>
 #include <QPainter>
 
+//#define ANTIALIAS_ON
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
@@ -80,6 +82,9 @@ void MainWindow::drawHere(double x, double y)
     }
 
     QPainter painter(img);
+#if ANTIALIAS_ON
+    painter.setRenderHints((QPainter::RenderHint) 0xF);
+#endif
 
     if (wasDragging)
     {
