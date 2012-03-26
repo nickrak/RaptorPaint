@@ -3,12 +3,12 @@
 
 #include "connectionwindow.h"
 
-#include <QDebug>
-#include <QRgb>
-#include <iostream>
 
+#include <iostream>
 #include <qmath.h>
 
+#include <QDebug>
+#include <QRgb>
 #include <QString>
 #include <QFileDialog>
 #include <QFile>
@@ -16,6 +16,7 @@
 #include <QInputDialog>
 #include <QLineEdit>
 #include <QColorDialog>
+#include <QBitmap>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -73,9 +74,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->wasDragging = false;
 
-    this->selectedTool = BRUSH;
-    this->toolSize = 10.0;
     this->colorSelected(QColor::fromRgb(0, 0, 0));
+    this->setToBrush();
+    this->resetBrush();
 }
 
 MainWindow::~MainWindow()
@@ -95,6 +96,7 @@ void MainWindow::drawHere(double x, double y)
     QImage* img = this->cm->myImage();
     if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT)
     {
+        this->wasDragging = false;
         return;
     }
     if (img->isNull())
@@ -264,6 +266,7 @@ void MainWindow::setToBrush()
     this->resetToolbox();
     this->selectedTool = BRUSH;
     ui->paintbrush->setChecked(true);
+    this->setPaintCursor();
 }
 
 void MainWindow::setToPencil()
@@ -271,6 +274,7 @@ void MainWindow::setToPencil()
     this->resetToolbox();
     this->selectedTool = PENCIL;
     ui->pencil->setChecked(true);
+    this->setPaintCursor();
 }
 
 void MainWindow::setToEraser()
@@ -278,6 +282,7 @@ void MainWindow::setToEraser()
     this->resetToolbox();
     this->selectedTool = ERASER;
     ui->eraser->setChecked(true);
+    this->setPaintCursor();
 }
 
 void MainWindow::setToType()
@@ -285,21 +290,63 @@ void MainWindow::setToType()
     this->resetToolbox();
     this->selectedTool = TYPE;
     ui->type->setChecked(true);
+    this->setPaintCursor();
 }
 
 void MainWindow::increaseBrush()
 {
     toolSize *= 1.25;
+    this->setPaintCursor();
 }
 
 void MainWindow::decreaseBrush()
 {
     toolSize *= 0.75;
+    this->setPaintCursor();
 }
 
 void MainWindow::resetBrush()
 {
     toolSize = 10;
+    this->setPaintCursor();
+}
+
+void MainWindow::setPaintCursor()
+{
+    switch (this->selectedTool)
+    {
+    case BRUSH:
+    case ERASER:
+        this->setPaintCursorSize(this->toolSize);
+        break;
+    case TYPE:
+        ui->paintArea->setCursor(Qt::IBeamCursor);
+        break;
+    case PENCIL:
+        ui->paintArea->setCursor(Qt::CrossCursor);
+        break;
+    }
+
+
+}
+
+void MainWindow::setPaintCursorSize(double size)
+{
+    if (size > 0)
+    {
+        double rad = size / 2.0;
+        QPixmap pix(size, size);
+        pix.fill(QColor::fromRgb(0, 0, 0, 0));
+
+        QPainter p(&pix);
+        QPen pen(QColor::fromRgb(128, 128, 128, 128));
+        p.setPen(pen);
+        p.setBrush(QBrush(QColor::fromRgb(0, 0, 0, 0)));
+        p.drawEllipse(0, 0, size - 1, size - 1);
+
+        this->currentSizeCursor = QCursor(pix, rad, rad);
+        ui->paintArea->setCursor(this->currentSizeCursor);
+    }
 }
 
 void MainWindow::clearCanvas()

@@ -63,12 +63,16 @@ private slots:
 private:
     bool changeCanvas(double x, double y, QPainter *painter);
     inline void resetToolbox();
+    void setPaintCursor();
+    void setPaintCursorSize(double size = 1.0);
 
     Ui::MainWindow *ui;
     ConnectionManager *cm;
 
     QIcon muted;
     QIcon unmuted;
+
+    QCursor currentSizeCursor;
 
     RaptorPaintTool selectedTool;
     QColor selectedColor;
