@@ -35,6 +35,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->connect(ui->userList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(userMuteToggle(QListWidgetItem*)));
 
+    this->connect(ui->paintArea, SIGNAL(mouseRelease()), this, SLOT(mouseRelease()));
+
     ui->mnuIn->setShortcut(QKeySequence("Ctrl+="));
     ui->mnuOut->setShortcut(QKeySequence("Ctrl+-"));
     ui->mnuActual->setShortcut(QKeySequence("Ctrl+0"));
@@ -56,6 +58,11 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::mouseRelease()
+{
+    this->wasDragging = false;
 }
 
 void MainWindow::drawHere(double x, double y)

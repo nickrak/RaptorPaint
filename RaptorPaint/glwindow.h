@@ -33,6 +33,7 @@ public slots:
 
 signals:
     void drawHere(double x, double y);
+    void mouseRelease();
 
 private:
     ImageStack* stack;

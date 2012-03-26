@@ -70,7 +70,7 @@ void GLWindow::mouseMoveEvent(QMouseEvent* e)
     this->lastLocation.setY(ry);
 
     // Tools
-    if (drawThisCycle)
+    if (drawThisCycle && !moveThisCycle)
     {
         QGenericMatrix<3, 3, double> offset;
         QGenericMatrix<3, 3, double> scale;
@@ -96,6 +96,10 @@ void GLWindow::mouseMoveEvent(QMouseEvent* e)
         this->drawHere(n(0, 0), n(1, 0));
 
         this->repaint();
+    }
+    else
+    {
+        this->mouseRelease();
     }
 }
 

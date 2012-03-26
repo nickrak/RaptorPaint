@@ -41,6 +41,8 @@ private slots:
     void drawHere(double x, double y);
 
     void saveToFile();
+
+    void mouseRelease();
     
 private:
     void changeCanvas(double x, double y, QPainter *painter);
