@@ -45,6 +45,8 @@ private slots:
 
     void mouseRelease();
 
+    void clearCanvas();
+
     void setToBrush();
     void setToPencil();
     void setToEraser();
@@ -52,6 +54,11 @@ private slots:
 
     void openColorPicker();
     void colorSelected(QColor color);
+
+    void increaseBrush();
+    void decreaseBrush();
+    void resetBrush();
+
     
 private:
     bool changeCanvas(double x, double y, QPainter *painter);

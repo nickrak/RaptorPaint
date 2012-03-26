@@ -51,6 +51,7 @@
     <addaction name="separator"/>
     <addaction name="actionSave"/>
     <addaction name="separator"/>
+    <addaction name="actionClear"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -60,8 +61,17 @@
     <addaction name="mnuOut"/>
     <addaction name="mnuActual"/>
    </widget>
+   <widget class="QMenu" name="menuBrush">
+    <property name="title">
+     <string>Brush</string>
+    </property>
+    <addaction name="actionIncrease_Size"/>
+    <addaction name="actionDecrease_Size"/>
+    <addaction name="actionDefault_Size"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
+   <addaction name="menuBrush"/>
   </widget>
   <widget class="QDockWidget" name="participantList">
    <property name="minimumSize">
@@ -441,6 +451,26 @@
   <action name="mnuActual">
    <property name="text">
     <string>Actual Size</string>
+   </property>
+  </action>
+  <action name="actionClear">
+   <property name="text">
+    <string>Clear</string>
+   </property>
+  </action>
+  <action name="actionIncrease_Size">
+   <property name="text">
+    <string>Increase Size</string>
+   </property>
+  </action>
+  <action name="actionDecrease_Size">
+   <property name="text">
+    <string>Decrease Size</string>
+   </property>
+  </action>
+  <action name="actionDefault_Size">
+   <property name="text">
+    <string>Default Size</string>
    </property>
   </action>
  </widget>

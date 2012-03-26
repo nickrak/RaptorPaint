@@ -33,6 +33,10 @@ MainWindow::MainWindow(QWidget *parent) :
     this->connect(ui->actionConnect_Host, SIGNAL(triggered()), this, SLOT(mnuConnect()));
     this->connect(ui->input, SIGNAL(returnPressed()), this, SLOT(txtInputReturnPressed()));
     this->connect(ui->actionSave, SIGNAL(triggered()),this, SLOT(saveToFile()));
+    this->connect(ui->actionClear, SIGNAL(triggered()), this, SLOT(clearCanvas()));
+    this->connect(ui->actionIncrease_Size, SIGNAL(triggered()), this, SLOT(increaseBrush()));
+    this->connect(ui->actionDecrease_Size, SIGNAL(triggered()), this, SLOT(decreaseBrush()));
+    this->connect(ui->actionDefault_Size, SIGNAL(triggered()), this, SLOT(resetBrush()));
 
     this->connect(this->cm, SIGNAL(userJoined(QString)), this, SLOT(userJoined(QString)));
     this->connect(this->cm, SIGNAL(userLeft(QString)), this, SLOT(userLeft(QString)));
@@ -47,6 +51,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->actionSave->setShortcut(QKeySequence("Ctrl+S"));
     ui->actionClose->setShortcut(QKeySequence("Ctrl+W"));
     ui->actionConnect_Host->setShortcut(QKeySequence("Ctrl+N"));
+    ui->actionIncrease_Size->setShortcut(QKeySequence("]"));
+    ui->actionDecrease_Size->setShortcut(QKeySequence("["));
 
     this->connect(ui->mnuIn, SIGNAL(triggered()), ui->paintArea, SLOT(zoomIn()));
     this->connect(ui->mnuOut, SIGNAL(triggered()), ui->paintArea, SLOT(zoomOut()));
@@ -279,4 +285,28 @@ void MainWindow::setToType()
     this->resetToolbox();
     this->selectedTool = TYPE;
     ui->type->setChecked(true);
+}
+
+void MainWindow::increaseBrush()
+{
+    toolSize *= 1.25;
+}
+
+void MainWindow::decreaseBrush()
+{
+    toolSize *= 0.75;
+}
+
+void MainWindow::resetBrush()
+{
+    toolSize = 10;
+}
+
+void MainWindow::clearCanvas()
+{
+    QPainter p(this->cm->myImage());
+    p.setCompositionMode(QPainter::CompositionMode_Clear);
+    p.fillRect(0,0,WIDTH,HEIGHT,Qt::SolidPattern);
+    p.setCompositionMode(QPainter::CompositionMode_SourceOver);
+    ui->paintArea->repaint();
 }
