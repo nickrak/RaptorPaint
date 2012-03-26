@@ -59,6 +59,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->connect(ui->color, SIGNAL(clicked()), this, SLOT(openColorPicker()));
 
     this->connect(&this->qcd, SIGNAL(colorSelected(QColor)), this, SLOT(colorSelected(QColor)));
+    this->connect(&this->qcd, SIGNAL(currentColorChanged(QColor)), this, SLOT(colorSelected(QColor)));
 
     ui->paintArea->setImageStack(this->cm->getLayerPtr());
 
