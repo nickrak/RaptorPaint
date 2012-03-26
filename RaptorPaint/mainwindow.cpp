@@ -61,6 +61,10 @@ MainWindow::MainWindow(QWidget *parent) :
     this->connect(ui->paintArea, SIGNAL(drawHere(double,double)), this, SLOT(drawHere(double,double)));
 
     this->wasDragging = false;
+
+    this->selectedTool = BRUSH;
+    this->selectedColor = QColor::fromRgb(0, 0, 0);
+    this->toolSize = 10.0;
 }
 
 MainWindow::~MainWindow()
@@ -117,15 +121,25 @@ void MainWindow::drawHere(double x, double y)
 
 void MainWindow::changeCanvas(double x, double y, QPainter* painter)
 {
-    QRectF r(-this->toolSize / 2.0, -this->toolSize / 2.0, this->toolSize / 2.0, this->toolSize / 2.0);
+    double radius = this->toolSize / 2.0;
+    QRectF r(x - radius, y - radius, radius * 2, radius * 2);
+
     switch (this->selectedTool)
     {
     case BRUSH:
+        painter->setBrush(QBrush(this->selectedColor));
+        painter->drawEllipse(r);
+        break;
     case PENCIL:
+        painter->setBrush(QBrush(this->selectedColor));
+        painter->drawEllipse(QRect(x, y, 1, 1));
+        break;
     case ERASER:
+        painter->setBrush(QBrush(QColor::fromRgb(0, 0, 0, 0)));
+        painter->drawEllipse(r);
+        break;
     case TYPE:
     default:
-        QRect r(x, y, 10, 10);
         painter->setBrush(Qt::SolidPattern);
         painter->setPen(QColor::fromRgb(0,0,0));
         painter->drawEllipse(r);

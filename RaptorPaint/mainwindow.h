@@ -59,7 +59,7 @@ private:
     QIcon unmuted;
 
     RaptorPaintTool selectedTool;
-    int selectedColor;
+    QColor selectedColor;
     int toolSize;
 
     bool wasDragging;

@@ -141,7 +141,6 @@ void ConnectionManager::run()
                 {
                     this->gotTextMessage(msg);
                 }
-
             }
             else
             {
