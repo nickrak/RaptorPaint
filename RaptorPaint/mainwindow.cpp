@@ -135,14 +135,15 @@ void MainWindow::changeCanvas(double x, double y, QPainter* painter)
         painter->drawEllipse(QRect(x, y, 1, 1));
         break;
     case ERASER:
-        painter->setBrush(QBrush(QColor::fromRgb(0, 0, 0, 0)));
+        painter->setCompositionMode(QPainter::CompositionMode_DestinationOut);
+        painter->setBrush(QBrush(QColor::fromRgb(0, 0, 0, 255)));
+        painter->setPen(QColor::fromRgb(0, 0, 0, 255));
         painter->drawEllipse(r);
+        painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
         break;
     case TYPE:
     default:
-        painter->setBrush(Qt::SolidPattern);
-        painter->setPen(QColor::fromRgb(0,0,0));
-        painter->drawEllipse(r);
+        std::cerr << "Something is wrong, no default brush" << std::endl;
         break;
     }
 }
