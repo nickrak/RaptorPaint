@@ -55,6 +55,7 @@ private slots:
     
 private:
     bool changeCanvas(double x, double y, QPainter *painter);
+    inline void resetToolbox();
 
     Ui::MainWindow *ui;
     ConnectionManager *cm;

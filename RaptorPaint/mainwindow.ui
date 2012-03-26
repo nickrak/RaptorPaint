@@ -221,6 +221,12 @@
             <height>32</height>
            </size>
           </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
          </widget>
         </item>
         <item>
@@ -249,6 +255,9 @@
             <width>32</width>
             <height>32</height>
            </size>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -279,6 +288,9 @@
             <height>32</height>
            </size>
           </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
          </widget>
         </item>
         <item>
@@ -307,6 +319,9 @@
             <width>32</width>
             <height>32</height>
            </size>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
           </property>
          </widget>
         </item>

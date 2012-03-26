@@ -244,22 +244,38 @@ void MainWindow::saveToFile()
     saveImage.save(fileName);
 }
 
+inline void MainWindow::resetToolbox()
+{
+    ui->type->setChecked(false);
+    ui->paintbrush->setChecked(false);
+    ui->eraser->setChecked(false);
+    ui->pencil->setChecked(false);
+}
+
 void MainWindow::setToBrush()
 {
+    this->resetToolbox();
     this->selectedTool = BRUSH;
+    ui->paintbrush->setChecked(true);
 }
 
 void MainWindow::setToPencil()
 {
+    this->resetToolbox();
     this->selectedTool = PENCIL;
+    ui->pencil->setChecked(true);
 }
 
 void MainWindow::setToEraser()
 {
+    this->resetToolbox();
     this->selectedTool = ERASER;
+    ui->eraser->setChecked(true);
 }
 
 void MainWindow::setToType()
 {
+    this->resetToolbox();
     this->selectedTool = TYPE;
+    ui->type->setChecked(true);
 }
