@@ -50,6 +50,12 @@ MainWindow::MainWindow(QWidget *parent) :
     this->connect(ui->mnuOut, SIGNAL(triggered()), ui->paintArea, SLOT(zoomOut()));
     this->connect(ui->mnuActual, SIGNAL(triggered()), ui->paintArea, SLOT(zoomActual()));
 
+    this->connect(ui->paintbrush,SIGNAL(clicked()), this, SLOT(setToBrush()));
+    this->connect(ui->pencil, SIGNAL(clicked()), this, SLOT(setToPencil()));
+    this->connect(ui->eraser, SIGNAL(clicked()), this, SLOT(setToEraser()));
+    this->connect(ui->type, SIGNAL(clicked()), this, SLOT(setToType()));
+
+
     ui->paintArea->setImageStack(this->cm->getLayerPtr());
 
     this->connect(ui->paintArea, SIGNAL(drawHere(double,double)), this, SLOT(drawHere(double,double)));
@@ -191,4 +197,24 @@ void MainWindow::saveToFile()
         }
     }
     saveImage.save(fileName);
+}
+
+void MainWindow::setToBrush()
+{
+    this->selectedTool = BRUSH;
+}
+
+void MainWindow::setToPencil()
+{
+    this->selectedTool = PENCIL;
+}
+
+void MainWindow::setToEraser()
+{
+    this->selectedTool = ERASER;
+}
+
+void MainWindow::setToType()
+{
+    this->selectedTool = TYPE;
 }

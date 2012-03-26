@@ -43,6 +43,11 @@ private slots:
     void saveToFile();
 
     void mouseRelease();
+
+    void setToBrush();
+    void setToPencil();
+    void setToEraser();
+    void setToType();
     
 private:
     void changeCanvas(double x, double y, QPainter *painter);
