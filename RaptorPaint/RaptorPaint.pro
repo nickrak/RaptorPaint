@@ -29,3 +29,7 @@ FORMS    += \
 
 RESOURCES += \
     Resources.qrc
+
+ICON = raptor.icns
+
+RC_FILE = myapp.rc
