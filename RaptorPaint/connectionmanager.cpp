@@ -16,7 +16,7 @@ QByteArray ConnectionManager::compressImage()
 {
     QByteArray buffer;
     QDataStream ds(&buffer, QIODevice::ReadWrite);
-    ds << *this->myImage();
+    ds << *(this->myImage());
     return qCompress(buffer);
 }
 
@@ -31,7 +31,7 @@ void ConnectionManager::decompressImage(QString user, QByteArray data)
 
     this->layers[user] = newImage;
 
-    if (oldImage)
+    if (!oldImage->isNull())
     {
         delete oldImage;
     }
