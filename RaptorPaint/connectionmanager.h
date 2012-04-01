@@ -32,6 +32,10 @@ private slots:
 
 private:
   void run();
+
+  QByteArray compressImage();
+  void decompressImage(QString user, QByteArray data);
+
   ImageStack layers;
   QMap<QString, bool> mutes;
   QMutex txtQueue;

@@ -4,14 +4,37 @@
 #include <QDebug>
 #include "glwindow.h"
 
-#define LOCAL_TEST
-
 ConnectionManager::ConnectionManager() :
     QThread(), my_Image(QImage(WIDTH, HEIGHT, QImage::Format_ARGB32_Premultiplied))
 {
 #ifdef LOCAL_TEST
     this->connectionWindowResponce("localuser", "");
 #endif
+}
+
+QByteArray ConnectionManager::compressImage()
+{
+    QByteArray buffer;
+    QDataStream ds(&buffer, QIODevice::ReadWrite);
+    ds << *this->myImage();
+    return qCompress(buffer);
+}
+
+void ConnectionManager::decompressImage(QString user, QByteArray data)
+{
+    QDataStream ds(qUncompress(data));
+    QImage img;
+    ds >> img;
+
+    QImage* oldImage = this->layers[user];
+    QImage* newImage = new QImage(img);
+
+    this->layers[user] = newImage;
+
+    if (oldImage)
+    {
+        delete oldImage;
+    }
 }
 
 // Send text message to server
@@ -100,6 +123,9 @@ void ConnectionManager::run()
             this->txtQueue.unlock();
         }
 
+        QString upd("UPD");
+        ds << upd << this->compressImage();
+
         if(this->socket.bytesAvailable() > 0)
         {
             QString messageType;
@@ -133,13 +159,27 @@ void ConnectionManager::run()
                         QString name = parts[parts.count() - 2];
                         this->userLeft(name);
                     }
-
                 }
 
                 // Ignore the message if user has been muted
-                if(!mutes[name])
+                if(!this->mutes[name])
                 {
                     this->gotTextMessage(msg);
+                }
+            }
+            else if (messageType == "IMG")
+            {
+                QByteArray buffer;
+                QString name;
+                ds >> name >> buffer;
+
+                if (!this->mutes[name])
+                {
+                    this->decompressImage(name, buffer);
+                }
+                else
+                {
+                    this->layers.remove(name);
                 }
             }
             else
