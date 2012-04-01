@@ -69,9 +69,25 @@
     <addaction name="actionDecrease_Size"/>
     <addaction name="actionDefault_Size"/>
    </widget>
+   <widget class="QMenu" name="menuBlending">
+    <property name="title">
+     <string>Blending</string>
+    </property>
+    <addaction name="actionNormal"/>
+    <addaction name="actionBlending"/>
+    <addaction name="actionScreen"/>
+    <addaction name="actionOverlay"/>
+    <addaction name="actionDarken"/>
+    <addaction name="actionLighten"/>
+    <addaction name="actionColor_Dodge"/>
+    <addaction name="actionColor_Burn"/>
+    <addaction name="actionHard_Light"/>
+    <addaction name="actionSoft_Light"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
    <addaction name="menuBrush"/>
+   <addaction name="menuBlending"/>
   </widget>
   <widget class="QDockWidget" name="participantList">
    <property name="minimumSize">
@@ -471,6 +487,56 @@
   <action name="actionDefault_Size">
    <property name="text">
     <string>Default Size</string>
+   </property>
+  </action>
+  <action name="actionNormal">
+   <property name="text">
+    <string>Normal</string>
+   </property>
+  </action>
+  <action name="actionBlending">
+   <property name="text">
+    <string>Multiply</string>
+   </property>
+  </action>
+  <action name="actionScreen">
+   <property name="text">
+    <string>Screen</string>
+   </property>
+  </action>
+  <action name="actionOverlay">
+   <property name="text">
+    <string>Overlay</string>
+   </property>
+  </action>
+  <action name="actionDarken">
+   <property name="text">
+    <string>Darken</string>
+   </property>
+  </action>
+  <action name="actionLighten">
+   <property name="text">
+    <string>Lighten</string>
+   </property>
+  </action>
+  <action name="actionColor_Dodge">
+   <property name="text">
+    <string>Color Dodge</string>
+   </property>
+  </action>
+  <action name="actionColor_Burn">
+   <property name="text">
+    <string>Color Burn</string>
+   </property>
+  </action>
+  <action name="actionHard_Light">
+   <property name="text">
+    <string>Hard Light</string>
+   </property>
+  </action>
+  <action name="actionSoft_Light">
+   <property name="text">
+    <string>Soft Light</string>
    </property>
   </action>
  </widget>

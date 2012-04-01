@@ -1,5 +1,5 @@
 #!/bin/bash
-cd ~/git/RaptorPaint
+cd ~/RaptorPaint
 
 
 cd ./RaptorPaint

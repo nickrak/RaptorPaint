@@ -73,10 +73,13 @@ MainWindow::MainWindow(QWidget *parent) :
     this->connect(ui->paintArea, SIGNAL(drawHere(double,double)), this, SLOT(drawHere(double,double)));
 
     this->wasDragging = false;
+}
 
+void MainWindow::initialize()
+{
+    this->resetBrush();
     this->colorSelected(QColor::fromRgb(0, 0, 0));
     this->setToBrush();
-    this->resetBrush();
 }
 
 MainWindow::~MainWindow()
@@ -326,8 +329,6 @@ void MainWindow::setPaintCursor()
         ui->paintArea->setCursor(Qt::CrossCursor);
         break;
     }
-
-
 }
 
 void MainWindow::setPaintCursorSize(double size)
