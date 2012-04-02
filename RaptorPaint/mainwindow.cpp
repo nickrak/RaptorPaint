@@ -39,6 +39,18 @@ MainWindow::MainWindow(QWidget *parent) :
     this->connect(ui->actionDecrease_Size, SIGNAL(triggered()), this, SLOT(decreaseBrush()));
     this->connect(ui->actionDefault_Size, SIGNAL(triggered()), this, SLOT(resetBrush()));
 
+    this->connect(ui->actionMultiply, SIGNAL(triggered()), this, SLOT(multiply()));
+    this->connect(ui->actionScreen, SIGNAL(triggered()), this, SLOT(screen()));
+    this->connect(ui->actionOverlay, SIGNAL(triggered()), this, SLOT(overlay()));
+    this->connect(ui->actionDarken, SIGNAL(triggered()), this, SLOT(darken()));
+    this->connect(ui->actionLighten, SIGNAL(triggered()), this, SLOT(lighten()));
+    this->connect(ui->actionColor_Burn, SIGNAL(triggered()), this, SLOT(colorBurn()));
+    this->connect(ui->actionColor_Dodge, SIGNAL(triggered()), this, SLOT(colorDodge()));
+    this->connect(ui->actionHard_Light, SIGNAL(triggered()), this, SLOT(hardLight()));
+    this->connect(ui->actionSoft_Light, SIGNAL(triggered()), this, SLOT(softLight()));
+    this->connect(ui->actionDifference, SIGNAL(triggered()), this, SLOT(difference()));
+    this->connect(ui->actionExclusion, SIGNAL(triggered()), this, SLOT(exclusion()));
+
     this->connect(this->cm, SIGNAL(userJoined(QString)), this, SLOT(userJoined(QString)));
     this->connect(this->cm, SIGNAL(userLeft(QString)), this, SLOT(userLeft(QString)));
 
@@ -52,8 +64,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->actionSave->setShortcut(QKeySequence("Ctrl+S"));
     ui->actionClose->setShortcut(QKeySequence("Ctrl+W"));
     ui->actionConnect_Host->setShortcut(QKeySequence("Ctrl+N"));
-    ui->actionIncrease_Size->setShortcut(QKeySequence("]"));
-    ui->actionDecrease_Size->setShortcut(QKeySequence("["));
+    ui->actionIncrease_Size->setShortcut(QKeySequence("Ctrl+]"));
+    ui->actionDecrease_Size->setShortcut(QKeySequence("Ctrl+["));
 
     this->connect(ui->mnuIn, SIGNAL(triggered()), ui->paintArea, SLOT(zoomIn()));
     this->connect(ui->mnuOut, SIGNAL(triggered()), ui->paintArea, SLOT(zoomOut()));
@@ -357,4 +369,59 @@ void MainWindow::clearCanvas()
     p.fillRect(0,0,WIDTH,HEIGHT,Qt::SolidPattern);
     p.setCompositionMode(QPainter::CompositionMode_SourceOver);
     ui->paintArea->repaint();
+}
+
+void MainWindow::multiply()
+{
+    this->blendMode = QPainter::CompositionMode_Multiply;
+}
+
+void MainWindow::screen()
+{
+    this->blendMode = QPainter::CompositionMode_Screen;
+}
+
+void MainWindow::overlay()
+{
+    this->blendMode = QPainter::CompositionMode_Overlay;
+}
+
+void MainWindow::darken()
+{
+    this->blendMode = QPainter::CompositionMode_Darken;
+}
+
+void MainWindow::lighten()
+{
+    this->blendMode = QPainter::CompositionMode_Lighten;
+}
+
+void MainWindow::colorDodge()
+{
+    this->blendMode = QPainter::CompositionMode_ColorDodge;
+}
+
+void MainWindow::colorBurn()
+{
+    this->blendMode = QPainter::CompositionMode_ColorBurn;
+}
+
+void MainWindow::hardLight()
+{
+    this->blendMode = QPainter::CompositionMode_HardLight;
+}
+
+void MainWindow::softLight()
+{
+    this->blendMode = QPainter::CompositionMode_SoftLight;
+}
+
+void MainWindow::difference()
+{
+    this->blendMode = QPainter::CompositionMode_Difference;
+}
+
+void MainWindow::exclusion()
+{
+    this->blendMode = QPainter::CompositionMode_Exclusion;
 }

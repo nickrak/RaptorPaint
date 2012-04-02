@@ -74,7 +74,7 @@
      <string>Blending</string>
     </property>
     <addaction name="actionNormal"/>
-    <addaction name="actionBlending"/>
+    <addaction name="actionMultiply"/>
     <addaction name="actionScreen"/>
     <addaction name="actionOverlay"/>
     <addaction name="actionDarken"/>
@@ -83,6 +83,8 @@
     <addaction name="actionColor_Burn"/>
     <addaction name="actionHard_Light"/>
     <addaction name="actionSoft_Light"/>
+    <addaction name="actionDifference"/>
+    <addaction name="actionExclusion"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -494,7 +496,7 @@
     <string>Normal</string>
    </property>
   </action>
-  <action name="actionBlending">
+  <action name="actionMultiply">
    <property name="text">
     <string>Multiply</string>
    </property>
@@ -537,6 +539,16 @@
   <action name="actionSoft_Light">
    <property name="text">
     <string>Soft Light</string>
+   </property>
+  </action>
+  <action name="actionDifference">
+   <property name="text">
+    <string>Difference</string>
+   </property>
+  </action>
+  <action name="actionExclusion">
+   <property name="text">
+    <string>Exclusion</string>
    </property>
   </action>
  </widget>
