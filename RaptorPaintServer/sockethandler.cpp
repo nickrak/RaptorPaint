@@ -49,9 +49,8 @@ QString SocketHandler::getName()
 
 void SocketHandler::gotDataFromSocket()
 {
-    if (reading) return;
-    reading = true;
-    for (QString type; this->socket->bytesAvailable() > 0;)
+    readMutex.lock();
+    for (QString type; !this->ds.atEnd();)
     {
         this->ds >> type;
 
@@ -65,9 +64,14 @@ void SocketHandler::gotDataFromSocket()
         else if (type == "UPD")
         {
             qDebug("Got Update");
-            QByteArray buffer;
-            this->ds >> buffer;
-            this->gotImageUpdate(this->name, buffer);
+            uint len;
+            this->ds >> len;
+            char data[len];
+            this->status(ds);
+            this->ds.readRawData(data, len);
+            this->status(ds);
+            qDebug("%u", len);
+            this->gotImageUpdate(this->name, QByteArray(data, (int)len));
         }
         else if (type == "ID")
         {
@@ -77,24 +81,31 @@ void SocketHandler::gotDataFromSocket()
         }
         else
         {
-            qDebug(type.prepend("BIG FUCKING ERROR: ").toAscii().data());
+            this->status(ds);
+            qDebug(type.prepend("BIG FUCKING ERROR: ").append("^").append(type.toAscii().toHex()).append("$")
+                   .append(QString::number(this->socket->bytesAvailable())).toAscii().data());
+            exit(1);
+
         }
     }
-    reading = false;
+    readMutex.unlock();
 }
 
 // Some other client sent a text message, please forward to this client
 void SocketHandler::sendTextMessage(QString msg)
 {   
-    this->m.lock();
+    this->writeMutex.lock();
     this->ds << QString("TXT") << msg;
-    this->m.unlock();
+    this->writeMutex.unlock();
 }
 
 // Some other client updated image, please forward to this client
 void SocketHandler::sendUpdate(QString user, QByteArray buffer)
 {
-    this->m.lock();
-    this->ds << QString("IMG") << user << buffer;
-    this->m.unlock();
+    if (user != this->name)
+    {
+        this->writeMutex.lock();
+        this->ds << QString("IMG") << user << buffer;
+        this->writeMutex.unlock();
+    }
 }

@@ -2,44 +2,27 @@
 #include "connectionwindow.h"
 
 #include <QDebug>
+#include <QBuffer>
 #include "glwindow.h"
 
 ConnectionManager::ConnectionManager() :
     QThread(), my_Image(QImage(WIDTH, HEIGHT, QImage::Format_ARGB32_Premultiplied))
 {
+    this->sendImage = false;
 #ifdef LOCAL_TEST
     this->connectionWindowResponce("localuser", "");
 #endif
 }
 
-QByteArray ConnectionManager::compressImage()
-{
-    QByteArray buffer;
-    QDataStream ds(&buffer, QIODevice::ReadWrite);
-    ds << *(this->myImage());
-    return qCompress(buffer);
-}
-
-void ConnectionManager::decompressImage(QString user, QByteArray data)
-{
-    QDataStream ds(qUncompress(data));
-    QImage img;
-    ds >> img;
-
-    QImage* oldImage = this->layers[user];
-    QImage* newImage = new QImage(img);
-
-    this->layers[user] = newImage;
-
-    if (!oldImage->isNull())
-    {
-        delete oldImage;
-    }
-}
-
 // Send text message to server
 void ConnectionManager::sendTextMessage(QString message)
 {
+    if (message == "!")
+    {
+        this->sendImage = true;
+        return;
+    }
+
     this->txtQueue.lock();
     this->outboundMessages.enqueue(message);
     this->txtQueue.unlock();
@@ -123,10 +106,28 @@ void ConnectionManager::run()
             this->txtQueue.unlock();
         }
 
-        QString upd("UPD");
-        ds << upd << this->compressImage();
+        if (this->sendImage)
+        {
+            QBuffer buffer;
+            buffer.open(QIODevice::WriteOnly);
+            {
+            QDataStream bs(&buffer);
+            bs << my_Image;
+            }
+            buffer.close();
 
-        if(this->socket.bytesAvailable() > 0)
+            QByteArray b(buffer.buffer());
+
+            ds << QString("UPD");
+            ds << ((uint)b.size());
+            ds.writeRawData(b.data(), b.size());
+
+            qDebug("%d", b.size());
+            this->sendImage = false;
+            qDebug("OK");
+        }
+
+        if(this->socket.bytesAvailable() > 10)
         {
             QString messageType;
             ds >> messageType;
@@ -169,17 +170,32 @@ void ConnectionManager::run()
             }
             else if (messageType == "IMG")
             {
-                QByteArray buffer;
+                QImage buffer;
                 QString name;
                 ds >> name >> buffer;
 
                 if (!this->mutes[name])
                 {
-                    this->decompressImage(name, buffer);
+                    if (this->name != name)
+                    {
+                        if (this->layers.contains(name))
+                        {
+                            QImage* oldImage = this->layers[name];
+                            this->layers[name] = new QImage(buffer);
+                            delete oldImage;
+                        }
+                        else
+                        {
+                            this->layers[name] = new QImage(buffer);
+                        }
+                    }
                 }
                 else
                 {
-                    this->layers.remove(name);
+                    if (this->layers.contains(name))
+                    {
+                        this->layers.remove(name);
+                    }
                 }
             }
             else

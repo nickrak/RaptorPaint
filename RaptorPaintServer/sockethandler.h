@@ -8,8 +8,9 @@
 #include <QList>
 #include <QByteArray>
 #include <QMutex>
+#include <QByteArray>
 
-typedef QQueue<QByteArray> QByteArrayQueue;
+typedef QQueue<QByteArray> RaptorImageQueue;
 
 class SocketHandler : public QObject
 {
@@ -21,7 +22,7 @@ public:
     QString getName();
     
 signals:
-    void gotImageUpdate(QString user, QByteArray buffer);
+    void gotImageUpdate(QString user, QByteArray image);
     void gotTextMessage(QString msg);
     void destroySelf(SocketHandler* sender);
 
@@ -34,14 +35,20 @@ private slots:
 
 private:
     QTcpSocket* socket;
-    QMutex m;
+    QMutex writeMutex;
+    QMutex readMutex;
     QDataStream ds;
     bool keepAlive;
     QString name;
     bool reading;
 
     QQueue<QString> pendingMessages;
-    QMap<QString, QByteArrayQueue> pendingUpdates;
+    QMap<QString, RaptorImageQueue> pendingUpdates;
+
+    void status(QDataStream& ds)
+    {
+        qDebug("status: %d", ds.status());
+    }
 };
 
 static QList<SocketHandler*> socketHandlers;
