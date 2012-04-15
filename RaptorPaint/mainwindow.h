@@ -9,6 +9,7 @@
 #include <QPainter>
 #include <QListWidgetItem>
 #include <QColorDialog>
+#include "historymanager.h"
 
 namespace Ui {
 class MainWindow;
@@ -25,7 +26,7 @@ typedef enum
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-    
+
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
@@ -61,7 +62,7 @@ private slots:
     void resetBrush();
 
     void blendingModeChanged(int index);
-    
+
 private:
     bool changeCanvas(double x, double y, QPainter *painter);
     inline void resetToolbox();
@@ -86,6 +87,8 @@ private:
     QMap<QString, QListWidgetItem*> listItems;
 
     QColorDialog qcd;
+
+    HistoryManager manager;
 };
 
 #endif // MAINWINDOW_H

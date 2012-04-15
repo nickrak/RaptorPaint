@@ -24,7 +24,7 @@ MainWindow::MainWindow(QWidget *parent) :
     cm(new ConnectionManager),
     muted(QIcon(":/userIcons/muted.png")),
     unmuted(QIcon(":/userIcons/unmuted.png")),
-    qcd(this)
+    qcd(this), manager(HistoryManager(cm->myImage()))
 {
     ui->setupUi(this);
 
@@ -54,6 +54,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->actionConnect_Host->setShortcut(QKeySequence("Ctrl+N"));
     ui->actionIncrease_Size->setShortcut(QKeySequence("Ctrl+]"));
     ui->actionDecrease_Size->setShortcut(QKeySequence("Ctrl+["));
+    ui->actionUndo->setShortcut(QKeySequence("Ctrl+z"));
+    ui->actionRedo->setShortcut(QKeySequence("Ctrl+shift+z"));
 
     this->connect(ui->cmbBlendingModes, SIGNAL(currentIndexChanged(int)), this, SLOT(blendingModeChanged(int)));
 

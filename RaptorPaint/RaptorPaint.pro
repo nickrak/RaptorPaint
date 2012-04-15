@@ -14,14 +14,16 @@ SOURCES += main.cpp \
     mainwindow.cpp \
     connectionmanager.cpp \
     connectionwindow.cpp \
-    glwindow.cpp
+    glwindow.cpp \
+    historymanager.cpp
 
 HEADERS  += \
     netpaintinterface.h \
     mainwindow.h \
     connectionmanager.h \
     connectionwindow.h \
-    glwindow.h
+    glwindow.h \
+    historymanager.h
 
 FORMS    += \
     mainwindow.ui \
