@@ -39,18 +39,6 @@ MainWindow::MainWindow(QWidget *parent) :
     this->connect(ui->actionDecrease_Size, SIGNAL(triggered()), this, SLOT(decreaseBrush()));
     this->connect(ui->actionDefault_Size, SIGNAL(triggered()), this, SLOT(resetBrush()));
 
-    this->connect(ui->actionMultiply, SIGNAL(triggered()), this, SLOT(multiply()));
-    this->connect(ui->actionScreen, SIGNAL(triggered()), this, SLOT(screen()));
-    this->connect(ui->actionOverlay, SIGNAL(triggered()), this, SLOT(overlay()));
-    this->connect(ui->actionDarken, SIGNAL(triggered()), this, SLOT(darken()));
-    this->connect(ui->actionLighten, SIGNAL(triggered()), this, SLOT(lighten()));
-    this->connect(ui->actionColor_Burn, SIGNAL(triggered()), this, SLOT(colorBurn()));
-    this->connect(ui->actionColor_Dodge, SIGNAL(triggered()), this, SLOT(colorDodge()));
-    this->connect(ui->actionHard_Light, SIGNAL(triggered()), this, SLOT(hardLight()));
-    this->connect(ui->actionSoft_Light, SIGNAL(triggered()), this, SLOT(softLight()));
-    this->connect(ui->actionDifference, SIGNAL(triggered()), this, SLOT(difference()));
-    this->connect(ui->actionExclusion, SIGNAL(triggered()), this, SLOT(exclusion()));
-
     this->connect(this->cm, SIGNAL(userJoined(QString)), this, SLOT(userJoined(QString)));
     this->connect(this->cm, SIGNAL(userLeft(QString)), this, SLOT(userLeft(QString)));
 
@@ -66,6 +54,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->actionConnect_Host->setShortcut(QKeySequence("Ctrl+N"));
     ui->actionIncrease_Size->setShortcut(QKeySequence("Ctrl+]"));
     ui->actionDecrease_Size->setShortcut(QKeySequence("Ctrl+["));
+
+    this->connect(ui->cmbBlendingModes, SIGNAL(currentIndexChanged(int)), this, SLOT(blendingModeChanged(int)));
 
     this->connect(ui->mnuIn, SIGNAL(triggered()), ui->paintArea, SLOT(zoomIn()));
     this->connect(ui->mnuOut, SIGNAL(triggered()), ui->paintArea, SLOT(zoomOut()));
@@ -85,6 +75,8 @@ MainWindow::MainWindow(QWidget *parent) :
     this->connect(ui->paintArea, SIGNAL(drawHere(double,double)), this, SLOT(drawHere(double,double)));
 
     this->wasDragging = false;
+
+    this->blendMode = QPainter::CompositionMode_SourceOver;
 }
 
 void MainWindow::initialize()
@@ -150,6 +142,8 @@ bool MainWindow::changeCanvas(double x, double y, QPainter* painter)
     double radius = this->toolSize / 2.0;
     QRectF r(x - radius, y - radius, radius * 2, radius * 2);
 
+    painter->setCompositionMode(this->blendMode);
+
     switch (this->selectedTool)
     {
     case BRUSH:
@@ -182,8 +176,10 @@ bool MainWindow::changeCanvas(double x, double y, QPainter* painter)
             painter->setFont(f);
             painter->drawText(x, y, WIDTH - x, HEIGHT - y, 0x1000, textToPrint);
         }
+        painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
         return true;
     }
+    painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
     return false;
 }
 
@@ -371,57 +367,42 @@ void MainWindow::clearCanvas()
     ui->paintArea->repaint();
 }
 
-void MainWindow::multiply()
+void MainWindow::blendingModeChanged(int index)
 {
-    this->blendMode = QPainter::CompositionMode_Multiply;
-}
-
-void MainWindow::screen()
-{
-    this->blendMode = QPainter::CompositionMode_Screen;
-}
-
-void MainWindow::overlay()
-{
-    this->blendMode = QPainter::CompositionMode_Overlay;
-}
-
-void MainWindow::darken()
-{
-    this->blendMode = QPainter::CompositionMode_Darken;
-}
-
-void MainWindow::lighten()
-{
-    this->blendMode = QPainter::CompositionMode_Lighten;
-}
-
-void MainWindow::colorDodge()
-{
-    this->blendMode = QPainter::CompositionMode_ColorDodge;
-}
-
-void MainWindow::colorBurn()
-{
-    this->blendMode = QPainter::CompositionMode_ColorBurn;
-}
-
-void MainWindow::hardLight()
-{
-    this->blendMode = QPainter::CompositionMode_HardLight;
-}
-
-void MainWindow::softLight()
-{
-    this->blendMode = QPainter::CompositionMode_SoftLight;
-}
-
-void MainWindow::difference()
-{
-    this->blendMode = QPainter::CompositionMode_Difference;
-}
-
-void MainWindow::exclusion()
-{
-    this->blendMode = QPainter::CompositionMode_Exclusion;
+    switch (index)
+    {
+    case 0: //Normal
+        this->blendMode =  QPainter::CompositionMode_SourceOver;
+        break;
+    case 1: //Darken
+        this->blendMode = QPainter::CompositionMode_Darken;
+        break;
+    case 2: //Multiply
+        this->blendMode = QPainter::CompositionMode_Multiply;
+        break;
+    case 3: //Lighten
+        this->blendMode = QPainter::CompositionMode_Lighten;
+        break;
+    case 4: //Screen
+        this->blendMode = QPainter::CompositionMode_Screen;
+        break;
+    case 5: //Overlay
+        this->blendMode = QPainter::CompositionMode_Overlay;
+        break;
+    case 6: //Soft Light
+        this->blendMode = QPainter::CompositionMode_SoftLight;
+        break;
+    case 7: //Hard Light
+        this->blendMode = QPainter::CompositionMode_HardLight;
+        break;
+    case 8: //Difference
+        this->blendMode = QPainter::CompositionMode_Difference;
+        break;
+    case 9: //Exclustion
+        this->blendMode = QPainter::CompositionMode_Exclusion;
+        break;
+    default:    //Back to normal something went wrong.
+        ui->cmbBlendingModes->setCurrentIndex(0);
+        break;
+    }
 }

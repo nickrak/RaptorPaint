@@ -60,18 +60,7 @@ private slots:
     void decreaseBrush();
     void resetBrush();
 
-    void multiply();
-    void screen();
-    void overlay();
-    void darken();
-    void lighten();
-    void colorDodge();
-    void colorBurn();
-    void hardLight();
-    void softLight();
-    void difference();
-    void exclusion();
-
+    void blendingModeChanged(int index);
     
 private:
     bool changeCanvas(double x, double y, QPainter *painter);
