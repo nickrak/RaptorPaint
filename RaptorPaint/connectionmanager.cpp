@@ -106,24 +106,15 @@ void ConnectionManager::run()
             this->txtQueue.unlock();
         }
 
-        if (this->sendImage)
+        if (this->sendImage || true)
         {
-            QBuffer buffer;
-            buffer.open(QIODevice::WriteOnly);
-            {
-            QDataStream bs(&buffer);
-            bs << my_Image;
-            }
-            buffer.close();
-
-            QByteArray b(buffer.buffer());
-
-            ds << QString("UPD");
-            ds << ((uint)b.size());
-            ds.writeRawData(b.data(), b.size());
-
-            qDebug("%d", b.size());
             this->sendImage = false;
+            QString upd("UPD");
+            QBuffer buffer;
+            QDataStream bds(&buffer);
+            buffer.open(QIODevice::ReadWrite);
+            bds << this->my_Image;
+            ds << upd << buffer.buffer().size() << buffer.buffer();
             qDebug("OK");
         }
 
@@ -170,9 +161,21 @@ void ConnectionManager::run()
             }
             else if (messageType == "IMG")
             {
-                QImage buffer;
+                QByteArray b;
+                int length;
+                //QImage buffer;
                 QString name;
-                ds >> name >> buffer;
+                ds >> name >> length;
+
+                for (; this->socket.bytesAvailable() < length; );
+
+                ds >> b;
+
+                QBuffer buff(&b);
+                QDataStream bds(&buff);
+
+                QImage buffer;
+                bds >> buffer;
 
                 if (!this->mutes[name])
                 {

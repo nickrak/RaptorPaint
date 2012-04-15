@@ -1,5 +1,6 @@
 #include "sockethandler.h"
 #include <QDebug>
+#include <QBuffer>
 
 // Newly received connection
 SocketHandler::SocketHandler(QTcpSocket* sock) :
@@ -64,14 +65,11 @@ void SocketHandler::gotDataFromSocket()
         else if (type == "UPD")
         {
             qDebug("Got Update");
-            uint len;
-            this->ds >> len;
-            char data[len];
-            this->status(ds);
-            this->ds.readRawData(data, len);
-            this->status(ds);
-            qDebug("%u", len);
-            this->gotImageUpdate(this->name, QByteArray(data, (int)len));
+            int size;
+            for (this->ds >> size; this->socket->bytesAvailable() < size; );
+            QByteArray buffer;
+            this->ds >> buffer;
+            this->gotImageUpdate(this->name, buffer);
         }
         else if (type == "ID")
         {
@@ -105,7 +103,7 @@ void SocketHandler::sendUpdate(QString user, QByteArray buffer)
     if (user != this->name)
     {
         this->writeMutex.lock();
-        this->ds << QString("IMG") << user << buffer;
+        this->ds << QString("IMG") << user << buffer.size() << buffer;
         this->writeMutex.unlock();
     }
 }
