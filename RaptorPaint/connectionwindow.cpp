@@ -17,6 +17,20 @@ ConnectionWindow::~ConnectionWindow()
     delete ui;
 }
 
+void ConnectionWindow::keyPressEvent(QKeyEvent* e)
+{
+    if (e->key() == Qt::Key_Escape)
+    {
+        cancelClicked();
+        return;
+    }
+    if (e->key() == Qt::Key_Enter || e->key() == Qt::Key_Return)
+    {
+        connectClicked();
+        return;
+    }
+}
+
 void ConnectionWindow::cancelClicked()
 {
     ui->ipAddress->setText("");
