@@ -5,3 +5,4 @@ moc_*
 Makefile*
 ui_*.h
 qrc_*
+fullClean.command
