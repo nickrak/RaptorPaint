@@ -149,27 +149,15 @@ void ConnectionManager::gotDataFromBufferedTube(QByteArray buffer)
     }
     else if (messageType == "IMG")
     {
-        QByteArray b;
-        int length;
-        //QImage buffer;
         QString name;
-        ds >> name >> length;
-
-        for (; this->socket.bytesAvailable() < length; );
-
-        ds >> b;
-
-        QBuffer buff(&b);
-        QDataStream bds(&buff);
-
         QImage buffer;
-        bds >> buffer;
+        ds >> name >> buffer;
 
         if (!this->mutes[name])
         {
             if (this->name != name)
             {
-                if (this->layers.contains(name))
+                if (this->layers.contains(name) && this->layers[name] != 0)
                 {
                     QImage* oldImage = this->layers[name];
                     this->layers[name] = new QImage(buffer);
@@ -185,7 +173,11 @@ void ConnectionManager::gotDataFromBufferedTube(QByteArray buffer)
         {
             if (this->layers.contains(name))
             {
-                this->layers.remove(name);
+                QImage* oldImage = this->layers[name];
+                if (this->layers.remove(name) > 0)
+                {
+                    delete oldImage;
+                }
             }
         }
     }
