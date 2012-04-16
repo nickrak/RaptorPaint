@@ -180,6 +180,7 @@ void ConnectionManager::gotDataFromBufferedTube(QByteArray buffer)
                 }
             }
         }
+        this->repaintNow();
     }
     else
     {

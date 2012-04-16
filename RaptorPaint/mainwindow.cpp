@@ -41,6 +41,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->connect(this->cm, SIGNAL(userJoined(QString)), this, SLOT(userJoined(QString)));
     this->connect(this->cm, SIGNAL(userLeft(QString)), this, SLOT(userLeft(QString)));
+    this->connect(this->cm, SIGNAL(repaintNow()), this, SLOT(repaintNow()));
 
     this->connect(ui->userList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(userMuteToggle(QListWidgetItem*)));
 
@@ -371,6 +372,11 @@ void MainWindow::clearCanvas()
     p.setCompositionMode(QPainter::CompositionMode_Clear);
     p.fillRect(0,0,WIDTH,HEIGHT,Qt::SolidPattern);
     p.setCompositionMode(QPainter::CompositionMode_SourceOver);
+    ui->paintArea->repaint();
+}
+
+void MainWindow::repaintNow()
+{
     ui->paintArea->repaint();
 }
 

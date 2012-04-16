@@ -63,6 +63,8 @@ private slots:
 
     void blendingModeChanged(int index);
 
+    void repaintNow();
+
 private:
     bool changeCanvas(double x, double y, QPainter *painter);
     inline void resetToolbox();
