@@ -13,45 +13,44 @@
 #include <QMutex>
 
 #include "glwindow.h"
+#include "bufferedtube.h"
 
-class ConnectionManager : public QThread
+class ConnectionManager : public QObject
 {
     Q_OBJECT
 public:
-  ConnectionManager();
-  void openConnectionWindow();
-  void disconnect();
-  void sendTextMessage(QString message);
-  bool toggleMute(QString name);
-  QString getName();
-  ImageStack* getLayerPtr();
-  QImage* myImage();
+    ConnectionManager();
+    void openConnectionWindow();
+    void disconnect();
+    void sendTextMessage(QString message);
+    bool toggleMute(QString name);
+    QString getName();
+    ImageStack* getLayerPtr();
+    QImage* myImage();
+    void sendImageUpdate();
 
 private slots:
-  void connectionWindowResponce(QString username, QString hostname);
+    void connectionWindowResponce(QString username, QString hostname);
+    void gotDataFromBufferedTube(QByteArray buffer);
 
 private:
-  void run();
-  ImageStack layers;
-  QMap<QString, bool> mutes;
-  QMutex txtQueue;
-  QQueue<QString> outboundMessages;
-  QTcpSocket socket;
-  bool keepAlive;
-  QString name;
-  QImage my_Image;
-
-  bool sendImage;
-
+    ImageStack layers;
+    QMap<QString, bool> mutes;
+    QMutex txtQueue;
+    QQueue<QString> outboundMessages;
+    QTcpSocket socket;
+    BufferedTube* bt;
+    bool keepAlive;
+    QString name;
+    QImage my_Image;
+    bool sendImage;
 
 signals:
-  void gotTextMessage(QString message);
-  void gotImageUpdate();
-  void userJoined(QString user);
-  void userLeft(QString user);
+    void gotTextMessage(QString message);
+    void gotImageUpdate();
+    void userJoined(QString user);
+    void userLeft(QString user);
 
-public slots:
-    
 };
 
 #endif // CONNECTIONMANAGER_H

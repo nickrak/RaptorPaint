@@ -4,23 +4,23 @@
 
 // Newly received connection
 SocketHandler::SocketHandler(QTcpSocket* sock) :
-    QObject(), ds(sock), reading(false)
+    QObject(), bt(sock), reading(false)
 {
     this->socket = sock;
     socketHandlers << this;
     foreach (SocketHandler* handler, socketHandlers)
     {
-        this->connect(handler, SIGNAL(gotImageUpdate(QString,QByteArray)), this, SLOT(sendUpdate(QString,QByteArray)));
+        this->connect(handler, SIGNAL(gotImageUpdate(QString,QImage)), this, SLOT(sendUpdate(QString,QImage)));
         this->connect(handler, SIGNAL(gotTextMessage(QString)), this, SLOT(sendTextMessage(QString)));
 
         if (handler != this)
         {
-            this->connect(this, SIGNAL(gotImageUpdate(QString,QByteArray)), handler, SLOT(sendUpdate(QString,QByteArray)));
+            this->connect(this, SIGNAL(gotImageUpdate(QString,QImage)), handler, SLOT(sendUpdate(QString,QImage)));
             this->connect(this, SIGNAL(gotTextMessage(QString)), handler, SLOT(sendTextMessage(QString)));
         }
     }
 
-    this->connect(this->socket, SIGNAL(readyRead()), this, SLOT(gotDataFromSocket()));
+    this->connect(&this->bt, SIGNAL(gotBuffer(QByteArray)), this, SLOT(gotDataFromSocket(QByteArray)));
     this->connect(this->socket, SIGNAL(disconnected()), this, SLOT(deleteLater()));
 }
 
@@ -35,7 +35,6 @@ SocketHandler::~SocketHandler()
 
     if (this->socket->isOpen())
     {
-        this->ds << "QUIT";
         this->socket->flush();
         this->socket->close();
     }
@@ -48,62 +47,69 @@ QString SocketHandler::getName()
     return this->name;
 }
 
-void SocketHandler::gotDataFromSocket()
+void SocketHandler::gotDataFromSocket(QByteArray buffer)
 {
-    readMutex.lock();
-    for (QString type; !this->ds.atEnd();)
+    QDataStream ds(buffer);
+    QString type;
+    ds >> type;
+
+    if (type == "MSG")
     {
-        this->ds >> type;
-
-        if (type == "MSG")
-        {
-            qDebug("Got Message");
-            QString message;
-            this->ds >> message;
-            this->gotTextMessage(message.prepend("[%1] ").arg(this->name));
-        }
-        else if (type == "UPD")
-        {
-            qDebug("Got Update");
-            int size;
-            for (this->ds >> size; this->socket->bytesAvailable() < size; );
-            QByteArray buffer;
-            this->ds >> buffer;
-            this->gotImageUpdate(this->name, buffer);
-        }
-        else if (type == "ID")
-        {
-            qDebug("Got ID");
-            this->ds >> this->name;
-            this->gotTextMessage(QString("[**SERVER**] %1 joined.").arg(this->name));
-        }
-        else
-        {
-            this->status(ds);
-            qDebug(type.prepend("BIG FUCKING ERROR: ").append("^").append(type.toAscii().toHex()).append("$")
-                   .append(QString::number(this->socket->bytesAvailable())).toAscii().data());
-            exit(1);
-
-        }
+        qDebug("Got Message from %s", this->name.toAscii().data());
+        QString message;
+        ds >> message;
+        this->gotTextMessage(message.prepend("[%1] ").arg(this->name));
     }
-    readMutex.unlock();
+    else if (type == "UPD")
+    {
+        qDebug("Got Update from %s", this->name.toAscii().data());
+        QImage img;
+        ds >> img;
+        this->gotImageUpdate(this->name, img);
+    }
+    else if (type == "ID")
+    {
+        qDebug("Got ID");
+        ds >> this->name;
+        this->gotTextMessage(QString("[**SERVER**] %1 joined.").arg(this->name));
+    }
+    else
+    {
+        this->status(ds);
+        qDebug(type.prepend("BIG FUCKING ERROR: ").append("^").append(type.toAscii().toHex()).append("$")
+               .append(QString::number(this->socket->bytesAvailable())).toAscii().data());
+        exit(1);
+    }
 }
 
 // Some other client sent a text message, please forward to this client
 void SocketHandler::sendTextMessage(QString msg)
-{   
+{
     this->writeMutex.lock();
-    this->ds << QString("TXT") << msg;
+    QBuffer b;
+    b.open(QIODevice::WriteOnly);
+    {
+        QDataStream ds(&b);
+        ds << QString("TXT") << msg;
+    }
+    this->bt.sendBuffer(b);
+    qDebug("send");
     this->writeMutex.unlock();
 }
 
 // Some other client updated image, please forward to this client
-void SocketHandler::sendUpdate(QString user, QByteArray buffer)
+void SocketHandler::sendUpdate(QString user, QImage buffer)
 {
     if (user != this->name)
     {
         this->writeMutex.lock();
-        this->ds << QString("IMG") << user << buffer.size() << buffer;
+        QBuffer b;
+        b.open(QIODevice::WriteOnly);
+        {
+            QDataStream ds (&b);
+            ds << QString("IMG") << user << buffer;
+        }
+        this->bt.sendBuffer(b);
         this->writeMutex.unlock();
     }
 }

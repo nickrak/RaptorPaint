@@ -5,9 +5,12 @@
 #include <QDataStream>
 #include <QBuffer>
 #include <QImage>
+#include <QMutex>
+#include <QByteArray>
 
-class BufferedTube
+class BufferedTube : public QObject
 {
+    Q_OBJECT
 public:
     BufferedTube(QTcpSocket* socket);
     ~BufferedTube();
@@ -23,6 +26,8 @@ signals:
 private:
     QTcpSocket* sock;
     QDataStream ds;
+    QMutex m_r;
+    QMutex m_w;
 };
 
 #endif // BUFFEREDTUBE_H

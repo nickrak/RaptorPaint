@@ -6,7 +6,7 @@
 #include "glwindow.h"
 
 ConnectionManager::ConnectionManager() :
-    QThread(), my_Image(QImage(WIDTH, HEIGHT, QImage::Format_ARGB32_Premultiplied))
+    QObject(), my_Image(QImage(WIDTH, HEIGHT, QImage::Format_ARGB32_Premultiplied))
 {
     this->sendImage = false;
 #ifdef LOCAL_TEST
@@ -24,7 +24,13 @@ void ConnectionManager::sendTextMessage(QString message)
     }
 
     this->txtQueue.lock();
-    this->outboundMessages.enqueue(message);
+    QBuffer b;
+    b.open(QIODevice::WriteOnly);
+    {
+        QDataStream ds(&b);
+        ds << QString("MSG") << message;
+    }
+    this->bt->sendBuffer(b);
     this->txtQueue.unlock();
 }
 
@@ -33,8 +39,7 @@ void ConnectionManager::disconnect()
 {
     if(this->socket.isOpen())
     {
-        QDataStream ds(&this->socket);
-        ds << "QUIT";
+        delete this->bt;
     }
 }
 
@@ -53,9 +58,18 @@ void ConnectionManager::connectionWindowResponce(QString username, QString hostn
     this->name = username;
 #else
     this->name = username;
-    this->start();
-    this->socket.moveToThread(this);
     this->socket.connectToHost(hostname, 24554);
+    this->bt = new BufferedTube(&this->socket);
+    this->connect(this->bt, SIGNAL(gotBuffer(QByteArray)), this, SLOT(gotDataFromBufferedTube(QByteArray)));
+
+    QBuffer b;
+    b.open(QIODevice::WriteOnly);
+    {
+        QDataStream ds(&b);
+        ds << QString("ID") << this->name;
+    }
+    this->bt->sendBuffer(b);
+
 #endif
     this->layers[this->name] = &this->my_Image;
 }
@@ -88,123 +102,111 @@ QImage* ConnectionManager::myImage()
     return &this->my_Image;
 }
 
-void ConnectionManager::run()
+void ConnectionManager::gotDataFromBufferedTube(QByteArray buffer)
 {
-    for (; this->socket.thread() != this; this->msleep(10));
-    for (; this->socket.state() != QTcpSocket::ConnectedState; this->msleep(10));
+    QDataStream ds(buffer);
 
-    QDataStream ds(&this->socket);
+    QString messageType;
+    ds >> messageType;
 
-    ds << QString("ID") << this->name;
+    qDebug(messageType.toAscii().data());
 
-    for(keepAlive = true; keepAlive; this->msleep(100))
+    // Read text message from server
+    if(messageType == "TXT")
     {
-        for (QString msg("MSG"); !this->outboundMessages.isEmpty();)
+        QString msg;
+        ds >> msg;
+        int c = msg.indexOf("]");
+        QString name = msg.left(c).right(c-1);
+
+        if (name != "**SERVER**")
         {
-            this->txtQueue.lock();
-            ds << msg << this->outboundMessages.dequeue();
-            this->txtQueue.unlock();
+            this->userJoined(name);
         }
 
-        if (this->sendImage || true)
+        qDebug(QString(name).prepend("TXT from ").toAscii().data());
+        if (name == "**SERVER**")
         {
-            this->sendImage = false;
-            QString upd("UPD");
-            QBuffer buffer;
-            QDataStream bds(&buffer);
-            buffer.open(QIODevice::ReadWrite);
-            bds << this->my_Image;
-            ds << upd << buffer.buffer().size() << buffer.buffer();
-            qDebug("OK");
-        }
+            QStringList parts = msg.split(" ", QString::SkipEmptyParts);
 
-        if(this->socket.bytesAvailable() > 10)
-        {
-            QString messageType;
-            ds >> messageType;
-
-            // Read text message from server
-            if(messageType == "TXT")
+            if (parts.last() == "joined.")
             {
-                QString msg;
-                ds >> msg;
-                int c = msg.indexOf("]");
-                QString name = msg.left(c).right(c-1);
-
-                if (name != "**SERVER**")
-                {
-                    this->userJoined(name);
-                }
-
-                qDebug(QString(name).prepend("TXT from ").toAscii().data());
-                if (name == "**SERVER**")
-                {
-                    QStringList parts = msg.split(" ", QString::SkipEmptyParts);
-
-                    if (parts.last() == "joined.")
-                    {
-                        QString name = parts[parts.count() - 2];
-                        this->userJoined(name);
-                    }
-                    else if (parts.last() == "left.")
-                    {
-                        QString name = parts[parts.count() - 2];
-                        this->userLeft(name);
-                    }
-                }
-
-                // Ignore the message if user has been muted
-                if(!this->mutes[name])
-                {
-                    this->gotTextMessage(msg);
-                }
+                QString name = parts[parts.count() - 2];
+                this->userJoined(name);
             }
-            else if (messageType == "IMG")
+            else if (parts.last() == "left.")
             {
-                QByteArray b;
-                int length;
-                //QImage buffer;
-                QString name;
-                ds >> name >> length;
+                QString name = parts[parts.count() - 2];
+                this->userLeft(name);
+            }
+        }
 
-                for (; this->socket.bytesAvailable() < length; );
+        // Ignore the message if user has been muted
+        if(!this->mutes[name])
+        {
+            this->gotTextMessage(msg);
+        }
+    }
+    else if (messageType == "IMG")
+    {
+        QByteArray b;
+        int length;
+        //QImage buffer;
+        QString name;
+        ds >> name >> length;
 
-                ds >> b;
+        for (; this->socket.bytesAvailable() < length; );
 
-                QBuffer buff(&b);
-                QDataStream bds(&buff);
+        ds >> b;
 
-                QImage buffer;
-                bds >> buffer;
+        QBuffer buff(&b);
+        QDataStream bds(&buff);
 
-                if (!this->mutes[name])
+        QImage buffer;
+        bds >> buffer;
+
+        if (!this->mutes[name])
+        {
+            if (this->name != name)
+            {
+                if (this->layers.contains(name))
                 {
-                    if (this->name != name)
-                    {
-                        if (this->layers.contains(name))
-                        {
-                            QImage* oldImage = this->layers[name];
-                            this->layers[name] = new QImage(buffer);
-                            delete oldImage;
-                        }
-                        else
-                        {
-                            this->layers[name] = new QImage(buffer);
-                        }
-                    }
+                    QImage* oldImage = this->layers[name];
+                    this->layers[name] = new QImage(buffer);
+                    delete oldImage;
                 }
                 else
                 {
-                    if (this->layers.contains(name))
-                    {
-                        this->layers.remove(name);
-                    }
+                    this->layers[name] = new QImage(buffer);
                 }
             }
-            else
+        }
+        else
+        {
+            if (this->layers.contains(name))
             {
-                qDebug(messageType.prepend("BIG FUCKING ERROR: ").toAscii().data());
+                this->layers.remove(name);
             }
         }
+    }
+    else
+    {
+        qDebug(messageType.prepend("BIG FUCKING ERROR: ").toAscii().data());
+    }
+}
+
+void ConnectionManager::sendImageUpdate()
+{
+    if (this->socket.isOpen())
+    {
+        this->sendImage = false;
+        QBuffer b;
+        b.open(QIODevice::WriteOnly);
+        {
+            QDataStream ds(&b);
+            ds << QString("UPD") << this->my_Image;
+        }
+        this->bt->sendBuffer(b);
+        qDebug("OK");
     }
 }

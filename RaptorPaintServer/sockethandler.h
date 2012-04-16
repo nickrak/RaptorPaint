@@ -8,7 +8,7 @@
 #include <QList>
 #include <QByteArray>
 #include <QMutex>
-#include <QByteArray>
+#include "bufferedtube.h"
 
 typedef QQueue<QByteArray> RaptorImageQueue;
 
@@ -20,24 +20,24 @@ public:
     ~SocketHandler();
 
     QString getName();
-    
+
 signals:
-    void gotImageUpdate(QString user, QByteArray image);
+    void gotImageUpdate(QString user, QImage image);
     void gotTextMessage(QString msg);
     void destroySelf(SocketHandler* sender);
 
 public slots:
     void sendTextMessage(QString msg);
-    void sendUpdate(QString user, QByteArray buffer);
+    void sendUpdate(QString user, QImage buffer);
 
 private slots:
-    void gotDataFromSocket();
+    void gotDataFromSocket(QByteArray buffer);
 
 private:
     QTcpSocket* socket;
     QMutex writeMutex;
     QMutex readMutex;
-    QDataStream ds;
+    BufferedTube bt;
     bool keepAlive;
     QString name;
     bool reading;

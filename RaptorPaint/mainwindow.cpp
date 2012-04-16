@@ -96,6 +96,10 @@ MainWindow::~MainWindow()
 void MainWindow::mouseRelease()
 {
     this->wasDragging = false;
+    if (this->cm != 0)
+    {
+        this->cm->sendImageUpdate();
+    }
 }
 
 void MainWindow::drawHere(double x, double y)
@@ -179,6 +183,7 @@ bool MainWindow::changeCanvas(double x, double y, QPainter* painter)
             painter->drawText(x, y, WIDTH - x, HEIGHT - y, 0x1000, textToPrint);
         }
         painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
+        this->cm->sendImageUpdate();
         return true;
     }
     painter->setCompositionMode(QPainter::CompositionMode_SourceOver);

@@ -1,6 +1,6 @@
 #include "bufferedtube.h"
 
-BufferedTube::BufferedTube(QTcpSocket* socket) : sock(socket)
+BufferedTube::BufferedTube(QTcpSocket* socket) : QObject(), sock(socket)
 {
     this->connect(this->sock, SIGNAL(readyRead()), this, SLOT(readyRead()));
 }
@@ -11,16 +11,19 @@ BufferedTube::~BufferedTube()
 
 void BufferedTube::sendBuffer(QBuffer& buffer)
 {
+    this->m_w.lock();
     QByteArray d = buffer.buffer();
     {
         QDataStream ds(this->sock);
         ds << d.size();
     }
     this->sock->write(d);
+    this->m_w.unlock();
 }
 
 void BufferedTube::readyRead()
 {
+    this->m_r.lock();
     static int waitingForSize = -1;
 
     for(;;)
@@ -30,27 +33,32 @@ void BufferedTube::readyRead()
             if (this->sock->bytesAvailable() > sizeof(int))
             {
                 QDataStream ds(this->sock);
-                ds << waitingForSize;
+                ds >> waitingForSize;
             }
             else
             {
-                return;
+                break;
             }
         }
 
-        if (this->sock->bytesAvailable() > waitingForSize)
+        if (this->sock->bytesAvailable() >= waitingForSize)
         {
             QByteArray buffer;
             buffer.resize(waitingForSize);
-            this->sock->read(buffer.data(), buffer.size());
-
+            this->sock->read(buffer.data(), waitingForSize);
             this->gotBuffer(buffer);
+
+            QDataStream ds(buffer);
+            QString s;
+            ds >> s;
+            qDebug(s.toAscii().data());
 
             waitingForSize = -1;
         }
         else
         {
-            return;
+            break;
         }
     }
+    this->m_r.unlock();
 }

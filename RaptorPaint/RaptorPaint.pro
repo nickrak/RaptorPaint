@@ -15,7 +15,8 @@ SOURCES += main.cpp \
     connectionmanager.cpp \
     connectionwindow.cpp \
     glwindow.cpp \
-    historymanager.cpp
+    historymanager.cpp \
+    bufferedtube.cpp
 
 HEADERS  += \
     netpaintinterface.h \
@@ -23,7 +24,8 @@ HEADERS  += \
     connectionmanager.h \
     connectionwindow.h \
     glwindow.h \
-    historymanager.h
+    historymanager.h \
+    bufferedtube.h
 
 FORMS    += \
     mainwindow.ui \

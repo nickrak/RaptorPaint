@@ -11,9 +11,11 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    sockethandler.cpp
+    sockethandler.cpp \
+bufferedtube.cpp
 
 HEADERS  += mainwindow.h \
-    sockethandler.h
+    sockethandler.h \
+bufferedtube.h
 
 FORMS    += mainwindow.ui
