@@ -9,7 +9,6 @@
 #include <QPainter>
 #include <QListWidgetItem>
 #include <QColorDialog>
-#include "historymanager.h"
 
 namespace Ui {
 class MainWindow;
@@ -89,8 +88,6 @@ private:
     QMap<QString, QListWidgetItem*> listItems;
 
     QColorDialog qcd;
-
-    HistoryManager manager;
 };
 
 #endif // MAINWINDOW_H

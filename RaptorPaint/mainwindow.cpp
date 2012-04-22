@@ -24,7 +24,7 @@ MainWindow::MainWindow(QWidget *parent) :
     cm(new ConnectionManager),
     muted(QIcon(":/userIcons/muted.png")),
     unmuted(QIcon(":/userIcons/unmuted.png")),
-    qcd(this), manager(HistoryManager(cm->myImage()))
+    qcd(this)
 {
     ui->setupUi(this);
 
