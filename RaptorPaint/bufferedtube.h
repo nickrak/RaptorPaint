@@ -13,7 +13,6 @@ class BufferedTube : public QObject
     Q_OBJECT
 public:
     BufferedTube(QTcpSocket* socket);
-    ~BufferedTube();
 
     void sendBuffer(QBuffer &buffer);
 

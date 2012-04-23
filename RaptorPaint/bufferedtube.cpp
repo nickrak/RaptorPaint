@@ -5,10 +5,6 @@ BufferedTube::BufferedTube(QTcpSocket* socket) : QObject(), sock(socket)
     this->connect(this->sock, SIGNAL(readyRead()), this, SLOT(readyRead()));
 }
 
-BufferedTube::~BufferedTube()
-{
-}
-
 void BufferedTube::sendBuffer(QBuffer& buffer)
 {
     this->m_w.lock();

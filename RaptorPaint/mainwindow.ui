@@ -163,19 +163,9 @@
     <addaction name="actionDecrease_Size"/>
     <addaction name="actionDefault_Size"/>
    </widget>
-   <widget class="QMenu" name="menuHistory">
-    <property name="title">
-     <string>History</string>
-    </property>
-    <addaction name="actionUndo"/>
-    <addaction name="actionRedo"/>
-    <addaction name="separator"/>
-    <addaction name="actionMake_Snapshot"/>
-   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
    <addaction name="menuBrush"/>
-   <addaction name="menuHistory"/>
   </widget>
   <widget class="QDockWidget" name="participantList">
    <property name="minimumSize">
