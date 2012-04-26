@@ -54,6 +54,7 @@ void GLWindow::adjustOffset(double x, double y)
 void GLWindow::mouseMoveEvent(QMouseEvent* e)
 {
     // Move Event
+    static bool needsUpdate = false;
     bool moveThisCycle = QApplication::keyboardModifiers().testFlag(Qt::ShiftModifier) && e->buttons().testFlag(Qt::LeftButton);
     bool drawThisCycle = e->buttons().testFlag(Qt::LeftButton);
     double rx = e->pos().x();
@@ -96,10 +97,15 @@ void GLWindow::mouseMoveEvent(QMouseEvent* e)
         this->drawHere(n(0, 0), n(1, 0));
 
         this->repaint();
+        needsUpdate = true;
     }
     else
     {
-        this->mouseRelease();
+        if (needsUpdate)
+        {
+            this->mouseRelease();
+            needsUpdate = false;
+        }
     }
 }
 
