@@ -204,6 +204,5 @@ void ConnectionManager::sendImageUpdate()
             ds << QString("UPD") << this->my_Image;
         }
         this->bt->sendBuffer(b);
-        qDebug("OK");
     }
 }
