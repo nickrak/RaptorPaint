@@ -153,6 +153,8 @@ void ConnectionManager::gotDataFromBufferedTube(QByteArray buffer)
         QImage buffer;
         ds >> name >> buffer;
 
+        this->userJoined(name);
+
         if (!this->mutes[name])
         {
             if (this->name != name)
