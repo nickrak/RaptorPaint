@@ -237,7 +237,7 @@ void MainWindow::userLeft(QString name)
         delete item;
 
         this->cm->getLayerPtr()->remove(name);
-        this->cm->repaintNow();
+        this->cm->forceRepaint();
     }
 }
 

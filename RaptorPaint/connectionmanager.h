@@ -28,6 +28,7 @@ public:
     ImageStack* getLayerPtr();
     QImage* myImage();
     void sendImageUpdate();
+    void forceRepaint();
 
 private slots:
     void connectionWindowResponce(QString username, QString hostname);

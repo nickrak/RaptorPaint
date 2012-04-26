@@ -14,6 +14,11 @@ ConnectionManager::ConnectionManager() :
 #endif
 }
 
+void ConnectionManager::forceRepaint()
+{
+    this->repaintNow();
+}
+
 // Send text message to server
 void ConnectionManager::sendTextMessage(QString message)
 {
