@@ -235,6 +235,9 @@ void MainWindow::userLeft(QString name)
         QListWidgetItem* item = this->listItems[name];
         this->listItems.remove(name);
         delete item;
+
+        this->cm->getLayerPtr()->remove(name);
+        this->cm->repaintNow();
     }
 }
 
