@@ -241,9 +241,10 @@ void MainWindow::userLeft(QString name)
 // Got message from server
 void MainWindow::gotTextMessage(QString msg)
 {
+    msg = msg.replace("<", "&lt;").replace(">", "&gt;");
     if(msg.startsWith(QString("[%1]").arg(this->cm->getName())))
     {
-        msg = msg.prepend("<p class=\"me\">").append("</p>");
+        msg = msg.prepend("<strong>").append("</strong>");
     }
     ui->chatLog->append(msg);
 }
