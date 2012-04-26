@@ -1,5 +1,6 @@
 #include "glwindow.h"
 #include <iostream>
+#include <time.h>
 #include <QMouseEvent>
 #include <QKeyEvent>
 #include <QApplication>
@@ -55,6 +56,7 @@ void GLWindow::mouseMoveEvent(QMouseEvent* e)
 {
     // Move Event
     static bool needsUpdate = false;
+    static time_t lastUpdateTime = 0;
     bool moveThisCycle = QApplication::keyboardModifiers().testFlag(Qt::ShiftModifier) && e->buttons().testFlag(Qt::LeftButton);
     bool drawThisCycle = e->buttons().testFlag(Qt::LeftButton);
     double rx = e->pos().x();
@@ -101,10 +103,12 @@ void GLWindow::mouseMoveEvent(QMouseEvent* e)
     }
     else
     {
-        if (needsUpdate)
+        time_t now = time(NULL);
+        if (needsUpdate && now - lastUpdateTime >= 1)
         {
             this->mouseRelease();
             needsUpdate = false;
+            lastUpdateTime = now;
         }
     }
 }
