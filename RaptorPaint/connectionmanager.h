@@ -51,6 +51,8 @@ signals:
     void userJoined(QString user);
     void userLeft(QString user);
 
+    void done();
+
     void repaintNow();
 
 };

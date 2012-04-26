@@ -8,7 +8,8 @@ int main(int argc, char *argv[])
 
     MainWindow m;
     m.initialize();
-    m.show();
+    m.cm->openConnectionWindow();
+    m.cm->connect(m.cm, SIGNAL(done()), &m, SLOT(show()));
 
     return a.exec();
 }

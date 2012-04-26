@@ -31,7 +31,6 @@ MainWindow::MainWindow(QWidget *parent) :
     this->cm->myImage()->fill(0x00FF0000);
 
     this->connect(this->cm, SIGNAL(gotTextMessage(QString)), this, SLOT(gotTextMessage(QString)));
-    this->connect(ui->actionConnect_Host, SIGNAL(triggered()), this, SLOT(mnuConnect()));
     this->connect(ui->input, SIGNAL(returnPressed()), this, SLOT(txtInputReturnPressed()));
     this->connect(ui->actionSave, SIGNAL(triggered()),this, SLOT(saveToFile()));
     this->connect(ui->actionClear, SIGNAL(triggered()), this, SLOT(clearCanvas()));
@@ -52,7 +51,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->mnuActual->setShortcut(QKeySequence("Ctrl+0"));
     ui->actionSave->setShortcut(QKeySequence("Ctrl+S"));
     ui->actionClose->setShortcut(QKeySequence("Ctrl+W"));
-    ui->actionConnect_Host->setShortcut(QKeySequence("Ctrl+N"));
     ui->actionIncrease_Size->setShortcut(QKeySequence("Ctrl+]"));
     ui->actionDecrease_Size->setShortcut(QKeySequence("Ctrl+["));
     ui->actionUndo->setShortcut(QKeySequence("Ctrl+z"));
@@ -217,11 +215,6 @@ void MainWindow::userMuteToggle(QListWidgetItem *item)
     QString user = item->text();
     bool mute = this->cm->toggleMute(user);
     item->setIcon(mute ? this->muted : this->unmuted);
-}
-
-void MainWindow::mnuConnect()
-{
-    this->cm->openConnectionWindow();
 }
 
 void MainWindow::userJoined(QString name)

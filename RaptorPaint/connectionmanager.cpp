@@ -72,6 +72,8 @@ void ConnectionManager::connectionWindowResponce(QString username, QString hostn
 
 #endif
     this->layers[this->name] = &this->my_Image;
+
+    this->done();
 }
 
 // Toggles mute for the specified user and returns mute status

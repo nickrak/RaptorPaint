@@ -37,6 +37,7 @@ void ConnectionWindow::cancelClicked()
     ui->userName->setText("");
     this->close();
     this->deleteLater();
+    exit(0);
 }
 
 void ConnectionWindow::connectClicked()

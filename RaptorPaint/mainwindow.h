@@ -31,9 +31,10 @@ public:
     ~MainWindow();
     void initialize();
 
+    ConnectionManager *cm;
+
 private slots:
     void gotTextMessage(QString msg);
-    void mnuConnect();
     void txtInputReturnPressed();
 
     void userLeft(QString name);
@@ -71,7 +72,6 @@ private:
     void setPaintCursorSize(double size = 1.0);
 
     Ui::MainWindow *ui;
-    ConnectionManager *cm;
 
     QIcon muted;
     QIcon unmuted;
