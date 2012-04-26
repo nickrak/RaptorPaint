@@ -350,6 +350,7 @@ void MainWindow::setPaintCursorSize(double size)
 
         QPainter p(&pix);
         QPen pen(QColor::fromRgb(128, 128, 128, 128));
+        pen.setWidth(2);
         p.setPen(pen);
         p.setBrush(QBrush(QColor::fromRgb(0, 0, 0, 0)));
         p.drawEllipse(0, 0, size - 1, size - 1);
