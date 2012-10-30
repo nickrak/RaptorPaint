@@ -1,3 +1,17 @@
+// Raptor Paint
+// Copyright (C) 2012 Nick Rakoczy, Jessica Randall
+//
+// This program is free software: you can redistribute it and/or modify it under the
+// terms of the GNU General Public License as published by the Free Software Foundation,
+// either version 3 of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License along with this program.
+// If not, see <http://www.gnu.org/licenses/>.
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
@@ -24,14 +38,13 @@ MainWindow::MainWindow(QWidget *parent) :
     cm(new ConnectionManager),
     muted(QIcon(":/userIcons/muted.png")),
     unmuted(QIcon(":/userIcons/unmuted.png")),
-    qcd(this), manager(HistoryManager(cm->myImage()))
+    qcd(this)
 {
     ui->setupUi(this);
 
     this->cm->myImage()->fill(0x00FF0000);
 
     this->connect(this->cm, SIGNAL(gotTextMessage(QString)), this, SLOT(gotTextMessage(QString)));
-    this->connect(ui->actionConnect_Host, SIGNAL(triggered()), this, SLOT(mnuConnect()));
     this->connect(ui->input, SIGNAL(returnPressed()), this, SLOT(txtInputReturnPressed()));
     this->connect(ui->actionSave, SIGNAL(triggered()),this, SLOT(saveToFile()));
     this->connect(ui->actionClear, SIGNAL(triggered()), this, SLOT(clearCanvas()));
@@ -52,7 +65,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->mnuActual->setShortcut(QKeySequence("Ctrl+0"));
     ui->actionSave->setShortcut(QKeySequence("Ctrl+S"));
     ui->actionClose->setShortcut(QKeySequence("Ctrl+W"));
-    ui->actionConnect_Host->setShortcut(QKeySequence("Ctrl+N"));
     ui->actionIncrease_Size->setShortcut(QKeySequence("Ctrl+]"));
     ui->actionDecrease_Size->setShortcut(QKeySequence("Ctrl+["));
     ui->actionUndo->setShortcut(QKeySequence("Ctrl+z"));
@@ -219,11 +231,6 @@ void MainWindow::userMuteToggle(QListWidgetItem *item)
     item->setIcon(mute ? this->muted : this->unmuted);
 }
 
-void MainWindow::mnuConnect()
-{
-    this->cm->openConnectionWindow();
-}
-
 void MainWindow::userJoined(QString name)
 {
     qDebug("Join");
@@ -242,15 +249,19 @@ void MainWindow::userLeft(QString name)
         QListWidgetItem* item = this->listItems[name];
         this->listItems.remove(name);
         delete item;
+
+        this->cm->getLayerPtr()->remove(name);
+        this->cm->forceRepaint();
     }
 }
 
 // Got message from server
 void MainWindow::gotTextMessage(QString msg)
 {
+    msg = msg.replace("<", "&lt;").replace(">", "&gt;");
     if(msg.startsWith(QString("[%1]").arg(this->cm->getName())))
     {
-        msg = msg.prepend("<p class=\"me\">").append("</p>");
+        msg = msg.prepend("<strong>").append("</strong>");
     }
     ui->chatLog->append(msg);
 }
@@ -357,6 +368,7 @@ void MainWindow::setPaintCursorSize(double size)
 
         QPainter p(&pix);
         QPen pen(QColor::fromRgb(128, 128, 128, 128));
+        pen.setWidth(2);
         p.setPen(pen);
         p.setBrush(QBrush(QColor::fromRgb(0, 0, 0, 0)));
         p.drawEllipse(0, 0, size - 1, size - 1);

@@ -1,3 +1,17 @@
+// Raptor Paint
+// Copyright (C) 2012 Nick Rakoczy, Jessica Randall
+//
+// This program is free software: you can redistribute it and/or modify it under the
+// terms of the GNU General Public License as published by the Free Software Foundation,
+// either version 3 of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License along with this program.
+// If not, see <http://www.gnu.org/licenses/>.
+
 #include "connectionmanager.h"
 #include "connectionwindow.h"
 
@@ -12,6 +26,11 @@ ConnectionManager::ConnectionManager() :
 #ifdef LOCAL_TEST
     this->connectionWindowResponce("localuser", "");
 #endif
+}
+
+void ConnectionManager::forceRepaint()
+{
+    this->repaintNow();
 }
 
 // Send text message to server
@@ -72,6 +91,8 @@ void ConnectionManager::connectionWindowResponce(QString username, QString hostn
 
 #endif
     this->layers[this->name] = &this->my_Image;
+
+    this->done();
 }
 
 // Toggles mute for the specified user and returns mute status
@@ -153,6 +174,8 @@ void ConnectionManager::gotDataFromBufferedTube(QByteArray buffer)
         QImage buffer;
         ds >> name >> buffer;
 
+        this->userJoined(name);
+
         if (!this->mutes[name])
         {
             if (this->name != name)
@@ -200,6 +223,5 @@ void ConnectionManager::sendImageUpdate()
             ds << QString("UPD") << this->my_Image;
         }
         this->bt->sendBuffer(b);
-        qDebug("OK");
     }
 }

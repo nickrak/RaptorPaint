@@ -1,1 +1,29 @@
-Initial Commit
+== RaptorPaint ==
+RaptorPaint is an simple Qt/C++ client-server network application that allows users to text and draw together on a single canvas.
+
+=== Requirements ===
+* Windows XP SP2 or later
+* X11 Linux (Kernel 2.8 or later)
+* Macintosh OS X 10.6 or later
+* TCP/IPv4 NIC
+
+=== Installation ===
+# If using Macintosh, install the Qt 4.8 Libraries, the complete SDK is not needed (qt.nokia.com)
+# Copy executables to where ever you want. If you not using Macintosh, you should be able to run RaptorPaint off a thumb drive without elevated privileges.
+
+=== Known Issues ===
+* There is no username conflict resolution, resulting in race-conditions for image updates.
+* No security features (password-protection)
+* No administrative features (ban, kick, etc...)
+* No socket error handling (disconnect will be unknown, but causes no adverse effects)
+* No socket connection handling (failed connections will result in un-usable state requiring restart of application)
+
+=== License ===
+Raptor Paint
+Copyright (C) 2012 Nick Rakoczy, Jessica Randall
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program.  If not, see http://www.gnu.org/licenses/.
