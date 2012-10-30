@@ -1,3 +1,17 @@
+// Raptor Paint
+// Copyright (C) 2012 Nick Rakoczy, Jessica Randall
+//
+// This program is free software: you can redistribute it and/or modify it under the
+// terms of the GNU General Public License as published by the Free Software Foundation,
+// either version 3 of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License along with this program.
+// If not, see <http://www.gnu.org/licenses/>.
+
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
@@ -9,7 +23,6 @@
 #include <QPainter>
 #include <QListWidgetItem>
 #include <QColorDialog>
-#include "historymanager.h"
 
 namespace Ui {
 class MainWindow;
@@ -32,9 +45,10 @@ public:
     ~MainWindow();
     void initialize();
 
+    ConnectionManager *cm;
+
 private slots:
     void gotTextMessage(QString msg);
-    void mnuConnect();
     void txtInputReturnPressed();
 
     void userLeft(QString name);
@@ -72,7 +86,6 @@ private:
     void setPaintCursorSize(double size = 1.0);
 
     Ui::MainWindow *ui;
-    ConnectionManager *cm;
 
     QIcon muted;
     QIcon unmuted;
@@ -89,8 +102,6 @@ private:
     QMap<QString, QListWidgetItem*> listItems;
 
     QColorDialog qcd;
-
-    HistoryManager manager;
 };
 
 #endif // MAINWINDOW_H

@@ -1,5 +1,20 @@
+// Raptor Paint
+// Copyright (C) 2012 Nick Rakoczy, Jessica Randall
+//
+// This program is free software: you can redistribute it and/or modify it under the
+// terms of the GNU General Public License as published by the Free Software Foundation,
+// either version 3 of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License along with this program.
+// If not, see <http://www.gnu.org/licenses/>.
+
 #include "glwindow.h"
 #include <iostream>
+#include <time.h>
 #include <QMouseEvent>
 #include <QKeyEvent>
 #include <QApplication>
@@ -54,6 +69,8 @@ void GLWindow::adjustOffset(double x, double y)
 void GLWindow::mouseMoveEvent(QMouseEvent* e)
 {
     // Move Event
+    static bool needsUpdate = false;
+    static time_t lastUpdateTime = 0;
     bool moveThisCycle = QApplication::keyboardModifiers().testFlag(Qt::ShiftModifier) && e->buttons().testFlag(Qt::LeftButton);
     bool drawThisCycle = e->buttons().testFlag(Qt::LeftButton);
     double rx = e->pos().x();
@@ -96,10 +113,17 @@ void GLWindow::mouseMoveEvent(QMouseEvent* e)
         this->drawHere(n(0, 0), n(1, 0));
 
         this->repaint();
+        needsUpdate = true;
     }
     else
     {
-        this->mouseRelease();
+        time_t now = time(NULL);
+        if (needsUpdate && now - lastUpdateTime >= 1)
+        {
+            this->mouseRelease();
+            needsUpdate = false;
+            lastUpdateTime = now;
+        }
     }
 }
 

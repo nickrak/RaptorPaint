@@ -15,16 +15,13 @@ SOURCES += main.cpp \
     connectionmanager.cpp \
     connectionwindow.cpp \
     glwindow.cpp \
-    historymanager.cpp \
     bufferedtube.cpp
 
 HEADERS  += \
-    netpaintinterface.h \
     mainwindow.h \
     connectionmanager.h \
     connectionwindow.h \
     glwindow.h \
-    historymanager.h \
     bufferedtube.h
 
 FORMS    += \
