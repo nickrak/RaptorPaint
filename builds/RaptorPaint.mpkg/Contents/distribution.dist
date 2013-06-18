@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<installer-script authoringTool="Packages" authoringToolVersion="1.1" authoringToolBuild="2B57" minSpecVersion="1.0">
+    <options rootVolumeOnly="true" customize="never"/>
+    <installation-check script="installation_check()"/>
+    <volume-check script="volume_check()"/>
+    <!--+==========================+
+        |       Presentation       |
+        +==========================+-->
+    <title>DISTRIBUTION_TITLE</title>
+    <background file="background" scaling="none" alignment="left"/>
+    <license file="license.txt"/>
+    <!--+==========================+
+        |         Installer        |
+        +==========================+-->
+    <choices-outline>
+        <line choice="installer_choice_1"/>
+    </choices-outline>
+    <choice id="installer_choice_1" start_enabled="false" start_selected="true" title="RaptorPaint" description="">
+        <pkg-ref id="github.nickrak.RaptorPaint"/>
+    </choice>
+    <!--+==========================+
+        |    Package References    |
+        +==========================+-->
+    <pkg-ref id="github.nickrak.RaptorPaint" version="1.0" auth="Root" installKBytes="490">file:./Contents/Packages/RaptorPaint.pkg</pkg-ref>
+    <!--+==========================+
+        |    JavaScript Scripts    |
+        +==========================+-->
+    <script>
+
+	const __IC_FLAT_DISTRIBUTION__=false;
+	const IC_DISK_TYPE_DESTINATION=0;
+	const IC_DISK_TYPE_STARTUP_DISK=1;
+	const IC_OS_DISTRIBUTION_TYPE_ANY=0;
+	const IC_OS_DISTRIBUTION_TYPE_CLIENT=1;
+	const IC_OS_DISTRIBUTION_TYPE_SERVER=2;
+
+	const IC_CONDITION_EXIST=0;
+	const IC_CONDITION_DOES_NOT_EXIST=1;
+	const IC_SELECTOR_ANY=0;
+	const IC_SELECTOR_ALL=1;
+
+	const IC_CPU_ARCHITECTURE_ANY=0;
+	const IC_CPU_ARCHITECTURE_POWERPC=18;
+	const IC_CPU_ARCHITECTURE_INTEL=7;
+	const IC_CPU_ARCHITECTURE_TYPE_ANY=0;
+	const IC_CPU_ARCHITECTURE_TYPE_32=1;
+	const IC_CPU_ARCHITECTURE_TYPE_64=2;
+
+	function IC_CheckOS(inDiskType,inMustBeInstalled,inMinimumVersion,inDistributionType)
+	{
+		var tOSVersion=undefined;
+		
+		/* Check Minimum Version */
+		
+		if (inDiskType==IC_DISK_TYPE_DESTINATION)
+		{
+			if (my.target.systemVersion!=undefined)
+			{
+				tOSVersion=my.target.systemVersion.ProductVersion;
+			}
+			
+			/* Check if no OS is installed on the potential target */
+			
+			if (tOSVersion==undefined)
+			{
+				return (inMustBeInstalled==false);
+			}
+		}
+		else
+		{
+			tOSVersion=system.version.ProductVersion;
+		}
+		
+		if (system.compareVersions(tOSVersion,inMinimumVersion)==-1)
+		{
+			return false;
+		}
+		
+		/* Check Distribution Type */
+		
+		if (inDistributionType!=IC_OS_DISTRIBUTION_TYPE_ANY)
+		{
+			var tIsServer;
+			
+			if (inDiskType==IC_DISK_TYPE_DESTINATION)
+			{
+				tIsServer=system.files.fileExistsAtPath(my.target.mountpoint+'/System/Library/CoreServices/ServerVersion.plist');
+			}
+			else
+			{
+				tIsServer=system.files.fileExistsAtPath('/System/Library/CoreServices/ServerVersion.plist');
+			}
+			
+			if (inDistributionType==IC_OS_DISTRIBUTION_TYPE_CLIENT &amp;&amp; tIsServer==true)
+			{
+				return false;
+			}
+			
+			if (inDistributionType==IC_OS_DISTRIBUTION_TYPE_SERVER &amp;&amp; tIsServer==false)
+			{
+				return false;
+			}
+		}
+		
+		return true;
+	}
+
+	function IC_CheckFiles(inSelector,inCondition,inDiskType,inFiles)
+	{
+		var tCount;
+		
+		tCount=inFiles.length;
+		
+		if (tCount>0)
+		{
+			var tIndex;
+			var tExists;
+			var tPath;
+			var atLeastOneTrue=false;
+			
+			for(tIndex=0;tIndex&lt;tCount;tIndex++)
+			{
+				tPath=inFiles[tIndex];
+			
+				if (inDiskType==IC_DISK_TYPE_DESTINATION)
+				{
+					tPath=my.target.mountpoint+tPath;
+				}
+			
+				if (system.files.fileExistsAtPath(tPath)==true)
+				{
+					if (inCondition==IC_CONDITION_EXIST)
+					{
+						atLeastOneTrue=true;
+						
+						if (inSelector==IC_SELECTOR_ANY)
+						{
+							return true;
+						}
+					}
+					else if (inCondition==IC_CONDITION_DOES_NOT_EXIST &amp;&amp; inSelector==IC_SELECTOR_ALL)
+					{
+						return false;
+					}
+				}
+				else
+				{
+					if (inCondition==IC_CONDITION_EXIST &amp;&amp; inSelector==IC_SELECTOR_ALL)
+					{
+						return false;
+					}
+					else if (inCondition==IC_CONDITION_DOES_NOT_EXIST)
+					{
+						atLeastOneTrue=true;
+						
+						if (inSelector==IC_SELECTOR_ANY)
+						{
+							return true;
+						}
+					}
+				}
+			}
+		
+			return atLeastOneTrue;
+		}
+		
+		return true;
+	}
+
+	function IC_CheckCPU(inMinimumCoresCount,inSupportedArchitecture,inSupportedPowerPCArchitectureType,inSupportedIntelArchitectureType,inMinimumFrequency)
+	{
+		/* Check Minimum Core Count */
+		
+		if (system.sysctl('hw.ncpu')>=inMinimumCoresCount)
+		{
+			var tArchitecture;
+			var t64BitSupport;
+			
+			tArchitecture=system.sysctl('hw.cputype');
+			
+			/* Check Architecture */
+			
+			if (inSupportedArchitecture!=IC_CPU_ARCHITECTURE_ANY)
+			{
+				if (inSupportedArchitecture!=tArchitecture)
+				{
+					return false;
+				}
+			}
+			
+			/* Check Architecture Type */
+			
+			t64BitSupport=system.sysctl('hw.cpu64bit_capable');
+			
+			if (tArchitecture==IC_CPU_ARCHITECTURE_POWERPC)
+			{
+				if ((inSupportedPowerPCArchitectureType==IC_CPU_ARCHITECTURE_TYPE_32 &amp;&amp; t64BitSupport==1) ||
+					(inSupportedPowerPCArchitectureType==IC_CPU_ARCHITECTURE_TYPE_64 &amp;&amp; t64BitSupport==0))
+				{
+					return false;
+				}
+			}
+			else if (tArchitecture==IC_CPU_ARCHITECTURE_INTEL)
+			{
+				if ((inSupportedIntelArchitectureType==IC_CPU_ARCHITECTURE_TYPE_32 &amp;&amp; t64BitSupport==1) ||
+					(inSupportedIntelArchitectureType==IC_CPU_ARCHITECTURE_TYPE_64 &amp;&amp; t64BitSupport==0))
+				{
+					return false;
+				}
+			}
+			
+			/* Check Minimum CPU Frequency */
+			
+			if (system.sysctl('hw.cpufrequency_max')>=inMinimumFrequency)
+			{
+				return true;
+			}
+		}
+		
+		return false;
+	}
+
+	function installation_check()
+	{
+		var tResult;
+
+		tResult=IC_CheckOS(IC_DISK_TYPE_STARTUP_DISK,true,'10.5',IC_OS_DISTRIBUTION_TYPE_ANY);
+
+		if (tResult==false)
+		{
+			my.result.title = system.localizedStandardStringWithFormat('InstallationCheckError', system.localizedString('DISTRIBUTION_TITLE'));
+			my.result.message = ' ';
+			my.result.type = 'Fatal';
+		}
+
+		if (tResult==true)
+		{
+			tResult=IC_CheckCPU(1,IC_CPU_ARCHITECTURE_INTEL,IC_CPU_ARCHITECTURE_TYPE_ANY,IC_CPU_ARCHITECTURE_TYPE_ANY,1000000);
+
+			if (tResult==false)
+			{
+				my.result.title = system.localizedString('REQUIREMENT_FAILED_MESSAGE_INSTALLATION_CHECK_2');
+				my.result.message = system.localizedString('REQUIREMENT_FAILED_DESCRIPTION_INSTALLATION_CHECK_2');
+				my.result.type = 'Fatal';
+			}
+
+			if (tResult==true)
+			{
+				tResult=IC_CheckOS(IC_DISK_TYPE_STARTUP_DISK,true,'10.6',IC_OS_DISTRIBUTION_TYPE_ANY);
+
+				if (tResult==false)
+				{
+					my.result.title = system.localizedString('REQUIREMENT_FAILED_MESSAGE_INSTALLATION_CHECK_3');
+					my.result.message = system.localizedString('(null)');
+					my.result.type = 'Fatal';
+				}
+			}
+		}
+
+		return tResult;
+	}
+
+	function volume_check()
+	{
+		var tResult;
+
+		var tFilesToCheck0=new Array('/Library/Frameworks/QtCore.framework/Versions/4/QtCore',
+		                             '/Library/Frameworks/QtGui.framework/Versions/4/QtGui',
+		                             '/Library/Frameworks/QtNetwork.framework/Versions/4/QtNetwork');
+
+		tResult=IC_CheckFiles(IC_SELECTOR_ALL,IC_CONDITION_EXIST,IC_DISK_TYPE_DESTINATION,tFilesToCheck0);
+
+		if (tResult==false)
+		{
+			my.result.message = system.localizedString('REQUIREMENT_FAILED_MESSAGE_VOLUME_CHECK_1');
+			my.result.type = 'Fatal';
+		}
+
+		return tResult;
+	}
+
+    </script>
+</installer-script>
